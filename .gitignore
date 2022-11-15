@@ -1,0 +1,6 @@
+/i2cdev/
+*.yml
+*LICENSE
+*Lists.txt
+*.mk
+*helpers.h
