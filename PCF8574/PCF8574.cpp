@@ -17,8 +17,6 @@ static const char *TAG = "PCF8574";
     } while (0)
 
 esp_err_t ClassPCF8574::begin(gpio_num_t sda_gpio, gpio_num_t scl_gpio, i2c_port_t port, uint8_t Address){
-    ESP_LOGI(TAG, "Khởi tạo PCF8574");
-
     this->i2c_dev.port = port;
     this->i2c_dev.addr = Address;
     this->i2c_dev.cfg.sda_io_num = sda_gpio;

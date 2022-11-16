@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS ManHinhLCD.cpp
+    SRCS LCD_I2C.cpp
     INCLUDE_DIRS .
     REQUIRES    PCF8574 
                 hd44780
