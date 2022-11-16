@@ -14,9 +14,7 @@ static const char *TAG = "LCD_I2C";
 
 ClassPCF8574 _PCF8574;
 hd44780_t lcd;
-static esp_err_t pcf8574_send_lcd_data(const hd44780_t *lcd, uint8_t data){
-    return _PCF8574.write_port(data);
-}
+static esp_err_t pcf8574_send_lcd_data(const hd44780_t *lcd, uint8_t data){return _PCF8574.write_port(data);}
 
 esp_err_t ClassLCDI2C::print(const char *S, uint8_t x, uint8_t y){
     esp_err_t err = hd44780_gotoxy(&this->lcd,x,y);
@@ -57,6 +55,4 @@ esp_err_t ClassLCDI2C::begin(){
     return err;
 }
 
-esp_err_t ClassLCDI2C::clear(){
-    return hd44780_clear(&this->lcd);
-}
+esp_err_t ClassLCDI2C::clear(){return hd44780_clear(&this->lcd);}
