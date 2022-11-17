@@ -11,79 +11,60 @@
 #include "LCD_I2C.h"
 static const char *TAG = "LCD_I2C";
 
+#define LCD_RS          0
+#define LCD_RW          1
+#define LCD_E           2
+#define LCD_D4          3
+#define LCD_D5          4
+#define LCD_D6          5
+#define LCD_D7          6
+#define LCD_BACKLIGHT   7
 
-// ClassPCF8574 _PCF8574;
-// hd44780_t lcd;
-esp_err_t pLCD_cb(const hd44780_t *lcd, uint8_t data)
-{    
-    return ESP_OK;
-}
+ClassPCF8574 _PCF8574;
+hd44780_t _LCD;
 
-esp_err_t ClassLCDI2C::PCFWrite(uint8_t data)
+
+
+esp_err_t PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
 {
-    return this->PCF8574.write_port(data);
+    return _PCF8574.write(data);
 }
+
+esp_err_t ClassLCDI2C::begin()
+{
+    i2cdev_init();
+    esp_err_t err = ESP_OK;
+    err =_PCF8574.begin(    GPIO_NUM_18,
+                            GPIO_NUM_19,
+                            0,
+                            0x20);
+
+    _LCD.pins.d4 = LCD_D4;
+    _LCD.pins.d5 = LCD_D5;
+    _LCD.pins.d6 = LCD_D6;
+    _LCD.pins.d7 = LCD_D7;
+    _LCD.pins.rs = LCD_RS;
+    _LCD.pins.e = LCD_E;
+    _LCD.pins.bl = LCD_BACKLIGHT;
+    _LCD.write_cb = PCF_send_lcd_data;
+    _LCD.font = HD44780_FONT_5X8;
+    _LCD.lines = 4;
+    hd44780_init(&_LCD);
+    return err;
+}
+
+
 
 esp_err_t ClassLCDI2C::print(const char *S, uint8_t x, uint8_t y)
 {
-    esp_err_t err = hd44780_gotoxy(&this->lcd,x,y);
-    err = hd44780_puts(&this->lcd,S);
-    
+    esp_err_t err = hd44780_gotoxy(&_LCD,x,y);
+    err = hd44780_puts(&_LCD,S);
     return err;
 }
 
-esp_err_t ClassLCDI2C::TurnOnBackLight(){return hd44780_switch_backlight(&this->lcd,1);}
-esp_err_t ClassLCDI2C::TurnOffBackLight() {return hd44780_switch_backlight(&this->lcd,0);}
+esp_err_t ClassLCDI2C::TurnOnBackLight(){return hd44780_switch_backlight(&_LCD,1);}
+esp_err_t ClassLCDI2C::TurnOffBackLight() {return hd44780_switch_backlight(&_LCD,0);}
 
-esp_err_t ClassLCDI2C::begin(PCF8574_conf_t *cfgPCF, LCD_conf_t *cfgLCD)
-{
-    esp_err_t err = ESP_OK;
-             err =     cfgLCD 
-                    &&  cfgPCF 
-                    &&  cfgLCD->IsHD44780 ? 
-                    ESP_OK : ESP_ERR_INVALID_ARG;
-    if(err != ESP_OK) {
-            ESP_LOGE(TAG,"Not confirm LCD type or lcd and pcf configs are NULL");
-            return err;
-    }
-    // i2c_config_t conf_i2cio =
-    // {
-    //     .mode = I2C_MODE_MASTER,
-    //     .sda_io_num = cfgPCF->sda_pin,
-    //     .scl_io_num = cfgPCF->scl_pin,
-    //     .sda_pullup_en = GPIO_PULLUP_ENABLE,
-    //     .scl_pullup_en = GPIO_PULLUP_ENABLE,
-    // };
-    //     conf_i2cio.master.clk_speed = 100000,
-    // i2c_param_config(0,&conf_i2cio);
-    // i2c_driver_install(0,conf_i2cio.mode,0,0,0);
-    // if(err != ESP_OK){
-    //     ESP_LOGE(TAG,"config master error %d",err);
-    //     return err;
-    // // }
-    // err = this -> PCF8574.begin(    cfgPCF->sda_pin, 
-    //                                 cfgPCF->scl_pin, 
-    //                                 cfgPCF->port, 
-    //                                 cfgPCF->Address);
 
-    err = this -> PCF8574.begin(    GPIO_NUM_18, 
-                                    GPIO_NUM_19, 
-                                    0, 
-                                    0x20);
-    this -> PCF8574.write_port(0x55);
-    this -> lcd.pins.d4 = cfgLCD->d4;
-    this -> lcd.pins.d5 = cfgLCD->d5;
-    this -> lcd.pins.d6 = cfgLCD->d6;
-    this -> lcd.pins.d7 = cfgLCD->d7;
-    this -> lcd.pins.e = cfgLCD->e;
-    this -> lcd.pins.rs = cfgLCD->rs;
-    // use callback to send data to LCD by I2C GPIO expander
-    this -> lcd.font = cfgLCD->font;
-    this -> lcd.lines = cfgLCD->lines;
-    this -> lcd.pins.bl = cfgLCD->backlight;
-    // this -> lcd.write_cb = (hd44780_write_cb_t)pLCD_cb(&this->lcd, *pcf_data); 
-    hd44780_init(&this->lcd);
-    return err;
-}
 
-esp_err_t ClassLCDI2C::clear(){return hd44780_clear(&this->lcd);}
+esp_err_t ClassLCDI2C::clear(){return hd44780_clear(&_LCD);}

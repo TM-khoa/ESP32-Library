@@ -49,17 +49,16 @@ struct LCD_conf_t{
 
 class ClassLCDI2C{
 private:
-    hd44780_t lcd;
+    
 public:
-    ClassPCF8574 PCF8574;
-    esp_err_t begin(PCF8574_conf_t *cfgPCF, LCD_conf_t *cfgLCD);
+    
+    esp_err_t begin();
     esp_err_t clear();
     esp_err_t TurnOnBackLight();
     esp_err_t TurnOffBackLight();
     esp_err_t print(const char *S, uint8_t x, uint8_t y);
-    esp_err_t configPin(LCD_conf_t *l,PCF8574_conf_t *pcf);
-    esp_err_t pLCD_cb(const hd44780_t *lcd, uint8_t data);
-    esp_err_t PCFWrite(uint8_t data);
+    // esp_err_t configPin(LCD_conf_t *l,PCF8574_conf_t *pcf);
+    // esp_err_t pLCD_cb(const hd44780_t *lcd, uint8_t data);
 };
 
 
