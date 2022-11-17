@@ -9,6 +9,7 @@
 #include <i2cdev.h>
 #include <esp_err.h>
 
+
 #include <iostream>
 using namespace std;
 
@@ -34,13 +35,13 @@ struct PCF8574_conf_t{
 };
 
 struct LCD_conf_t{
-    gpio_num_t d4;
-    gpio_num_t d5;
-    gpio_num_t d6;
-    gpio_num_t d7;
-    gpio_num_t e;
-    gpio_num_t rs;
-    gpio_num_t backlight;
+    uint8_t d4;
+    uint8_t d5;
+    uint8_t d6;
+    uint8_t d7;
+    uint8_t e;
+    uint8_t rs;
+    uint8_t backlight;
     hd44780_font_t font;
     uint8_t lines;
     bool IsHD44780;
@@ -48,16 +49,17 @@ struct LCD_conf_t{
 
 class ClassLCDI2C{
 private:
-    ClassPCF8574 PCF8574;
     hd44780_t lcd;
 public:
-    LCD_conf_t lcd_conf;
-    PCF8574_conf_t pcf_conf;
-    esp_err_t begin();
+    ClassPCF8574 PCF8574;
+    esp_err_t begin(PCF8574_conf_t *cfgPCF, LCD_conf_t *cfgLCD);
     esp_err_t clear();
     esp_err_t TurnOnBackLight();
     esp_err_t TurnOffBackLight();
     esp_err_t print(const char *S, uint8_t x, uint8_t y);
+    esp_err_t configPin(LCD_conf_t *l,PCF8574_conf_t *pcf);
+    esp_err_t pLCD_cb(const hd44780_t *lcd, uint8_t data);
+    esp_err_t PCFWrite(uint8_t data);
 };
 
 
