@@ -1,4 +1,4 @@
 idf_component_register(
-    SRCS ACS712.cpp
+    SRCS ACS712.c
     INCLUDE_DIRS .
 )

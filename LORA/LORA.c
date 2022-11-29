@@ -70,9 +70,9 @@ const char* TAG = "LoRaWAN";
 #define TIMEOUT_RESET                  100
 
 #define LoRaWAN_CS_GPIO 15
-#define LoRaWAN_RST_GPIO 27
-#define LoRaWAN_MISO_GPIO 13
-#define LoRaWAN_MOSI_GPIO 12
+#define LoRaWAN_RST_GPIO 5
+#define LoRaWAN_MISO_GPIO 12
+#define LoRaWAN_MOSI_GPIO 13
 #define LoRaWAN_SCK_GPIO 14
 
 static spi_device_handle_t __spi;
@@ -384,11 +384,15 @@ lora_init(void)
    uint8_t i = 0;
    while(i++ < TIMEOUT_RESET) {
       version = lora_read_reg(REG_VERSION);
-      if(version == 0x12) break;
+      if(version == 0x12) {
+         ESP_LOGI(TAG,"LORA version %u",version);
+         break;
+
+      }
       vTaskDelay(2);
    }
    assert(i <= TIMEOUT_RESET + 1); // at the end of the loop above, the max value i can reach is TIMEOUT_RESET + 1
-
+   if(i>=TIMEOUT_RESET) ESP_LOGE(TAG,"LORA version %u",version);
    /*
     * Default configuration.
     */
