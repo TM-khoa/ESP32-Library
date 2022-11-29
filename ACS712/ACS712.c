@@ -1,5 +1,6 @@
 #include "ACS712.h"
 #include "esp_adc_library.h"
+#include "math.h"
 
 #define zero pACS->zero
 #define sensitivity pACS->sensitivity
@@ -38,7 +39,7 @@ float ACS712_getCurrentAC(acs712_t *pACS, uint16_t frequency) {
 	int32_t Inow;
 
 	while (micros() - t_start < period) {
-		Inow = analogRead(pin) - zero;
+		Inow = ADC_READ(pin) - zero;
 		Isum += Inow*Inow;
 		measurements_count++;
 	}
@@ -50,7 +51,7 @@ float ACS712_getCurrentAC(acs712_t *pACS, uint16_t frequency) {
 float ACS712_getCurrentDC(acs712_t *pACS) {
 	int16_t acc = 0;
 	for (int i = 0; i < 10; i++) {
-		acc += analogRead(pin) - zero;
+		acc += ADC_READ(pin) - zero;
 	}
 	float I = (float)acc / 10.0 / ADC_SCALE * VREF / sensitivity;
 	return I;

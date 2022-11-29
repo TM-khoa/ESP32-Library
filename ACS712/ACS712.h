@@ -31,6 +31,7 @@ void ACS712_setZeroPoint(acs712_t *pACS, int _zero);
 void ACS712_setSensitivity(acs712_t *pACS, float sens);
 float ACS712_getCurrentDC(acs712_t *pACS);
 float ACS712_getCurrentAC(acs712_t *pACS, uint16_t frequency);
+
 #endif
 
 
