@@ -15,6 +15,7 @@ struct acs712_t{
 	int zero;
 	float sensitivity;
 	uint8_t pin;
+	uint32_t raw_value;
 };
 typedef struct acs712_t acs712_t;
 #define ACS712 acs712_t *pACS
