@@ -70,9 +70,9 @@ const char* TAG = "LoRaWAN";
 #define TIMEOUT_RESET                  100
 
 #define LoRaWAN_CS_GPIO 15
-#define LoRaWAN_RST_GPIO 27
-#define LoRaWAN_MISO_GPIO 13
-#define LoRaWAN_MOSI_GPIO 12
+#define LoRaWAN_RST_GPIO 5
+#define LoRaWAN_MISO_GPIO 12
+#define LoRaWAN_MOSI_GPIO 13
 #define LoRaWAN_SCK_GPIO 14
 
 static spi_device_handle_t __spi;
@@ -363,10 +363,12 @@ lora_init(void)
       .pre_cb = NULL
    };
    ret = spi_bus_add_device(VSPI_HOST, &dev, &__spi);
+   
    assert(ret == ESP_OK);
    if(ret == ESP_OK)
    {
-      ESP_LOGI(TAG, "Init spi device done!");
+      ESP_LOGE(TAG,"LORA timeout");
+      ESP_LOGE(TAG, "Init spi device done!");
    }
    else
    {
@@ -375,8 +377,8 @@ lora_init(void)
    /*
     * Perform hardware reset.
     */
+   
    lora_reset();
-
    /*
     * Check version.
     */
@@ -384,11 +386,15 @@ lora_init(void)
    uint8_t i = 0;
    while(i++ < TIMEOUT_RESET) {
       version = lora_read_reg(REG_VERSION);
-      if(version == 0x12) break;
+      if(version == 0x12) {
+         ESP_LOGI(TAG,"Get version %u",version);
+         break;
+      }
       vTaskDelay(2);
    }
    assert(i <= TIMEOUT_RESET + 1); // at the end of the loop above, the max value i can reach is TIMEOUT_RESET + 1
 
+   
    /*
     * Default configuration.
     */
