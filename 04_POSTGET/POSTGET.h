@@ -1,28 +1,27 @@
-#ifndef _POSTGET_h_
-#define _POSTGET_h_
+#ifndef _HTTP_CLIENT_UTILS_H_
+#define _HTTP_CLIENT_UTILS_H_
 
-#include <string.h>
-#include <stdlib.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "nvs_flash.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-//#include "protocol_examples_common.h"
-#include "esp_tls.h"
-
-#if CONFIG_MBEDTLS_CERTIFICATE_BUNDLE
-#include "esp_crt_bundle.h"
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+#include "esp_err.h"
+#include "esp_log.h"
+
 #include "esp_http_client.h"
+#include "esp_tls.h"
+#include "esp_crt_bundle.h"
 
 #define MAX_HTTP_RECV_BUFFER 512
 #define MAX_HTTP_OUTPUT_BUFFER 2048
+#define BYTES_PER_REQ MAX_HTTP_OUTPUT_BUFFER
 
-#define URL_GETDuLieuGuiXuongBoard "http://App.IoTVision.vn/api/Decker_DuLieuGuiXuongBoard?CheDo=1&key=58BF254ACED7"
+#ifndef HTTP_CLIENT_DEBUG
+#define HTTP_CLIENT_DEBUG 0
+#endif
 
 typedef enum
 {
@@ -58,11 +57,21 @@ typedef enum
     HTTP_Conflict,
 } HTTP_CODE_e;
 
-//char http_response[MAX_HTTP_OUTPUT_BUFFER];
+typedef enum
+{
+    DL_TYPE_CHUNCK,
+    DL_TYPE_FTP
+} client_func_HandleTypedef;
+
+void PostDebug();
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt);
-void httpGET(void);
+HTTP_CODE_e http_get(char *url, char *response);
+HTTP_CODE_e http_post(char *url, char *body);
+HTTP_CODE_e http_head(char *url);
 
-//HTTP_CODE_e http_get(char *url, char *response);
-
+#ifdef __cplusplus
+}
 #endif
+
+#endif // _HTTP_CLIENT_UTILS_H_

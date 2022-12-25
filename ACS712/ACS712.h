@@ -1,12 +1,9 @@
 #ifndef _ACS712_H_
 #define _ACS712_H_
 
-<<<<<<< HEAD
-=======
 #include <stdio.h>
 #include <stdint.h>
 
->>>>>>> d512c586a1c3106df660e0c2edf50195c5dbdde0
 #define ADC_SCALE 1023.0
 #define VREF 5.0
 #define DEFAULT_FREQUENCY 50
