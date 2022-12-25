@@ -387,14 +387,24 @@ lora_init(void)
    while(i++ < TIMEOUT_RESET) {
       version = lora_read_reg(REG_VERSION);
       if(version == 0x12) {
+<<<<<<< HEAD
          ESP_LOGI(TAG,"Get version %u",version);
          break;
+=======
+         ESP_LOGI(TAG,"LORA version %u",version);
+         break;
+
+>>>>>>> d512c586a1c3106df660e0c2edf50195c5dbdde0
       }
       vTaskDelay(2);
    }
    assert(i <= TIMEOUT_RESET + 1); // at the end of the loop above, the max value i can reach is TIMEOUT_RESET + 1
+<<<<<<< HEAD
 
    
+=======
+   if(i>=TIMEOUT_RESET) ESP_LOGE(TAG,"LORA version %u",version);
+>>>>>>> d512c586a1c3106df660e0c2edf50195c5dbdde0
    /*
     * Default configuration.
     */
