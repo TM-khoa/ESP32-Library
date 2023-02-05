@@ -329,9 +329,9 @@ lora_init(void)
    /*
     * Configure CPU hardware to communicate with the radio chip
     */
-   gpio_pad_select_gpio(LoRaWAN_RST_GPIO);
+   esp_rom_gpio_pad_select_gpio(LoRaWAN_RST_GPIO);
    gpio_set_direction(LoRaWAN_RST_GPIO, GPIO_MODE_OUTPUT);
-   gpio_pad_select_gpio(LoRaWAN_CS_GPIO);
+   esp_rom_gpio_pad_select_gpio(LoRaWAN_CS_GPIO);
    gpio_set_direction(LoRaWAN_CS_GPIO, GPIO_MODE_OUTPUT);
 
    spi_bus_config_t bus = {
