@@ -26,7 +26,7 @@ void InsertMACtoAP_SSID()
 {
 #define MAC_LENGTH 6
     uint8_t MAC[MAC_LENGTH];
-    esp_read_mac(MAC, ESP_MAC_WIFI_STA);
+    esp_read_mac(MAC, ESP_MAC_WIFI_STA); 
     
     for (uint8_t i = 0; i < MAC_LENGTH; i++){
         static int index = 0;

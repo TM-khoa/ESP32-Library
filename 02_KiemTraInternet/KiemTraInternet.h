@@ -13,6 +13,7 @@
 #include "ping/ping_sock.h"
 
 #include "wifi_manager.h"
+#include "esp_mac.h"
 
 void CheckIP(void *pvParameter);
 void GetChipID();

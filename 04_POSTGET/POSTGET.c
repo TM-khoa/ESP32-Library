@@ -8,141 +8,151 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     static int output_len = 0;         // Stores number of bytes read
     switch (evt->event_id)
     {
-    case HTTP_EVENT_ERROR:
-        ESP_LOGD(TAG, "HTTP_EVENT_ERROR");
-        goto free_output_buffer;
-        break;
-    case HTTP_EVENT_ON_CONNECTED:
-        ESP_LOGD(TAG, "HTTP_EVENT_ON_CONNECTED");
-        break;
-    case HTTP_EVENT_HEADER_SENT:
-        ESP_LOGD(TAG, "HTTP_EVENT_HEADER_SENT");
-        break;
-    case HTTP_EVENT_ON_HEADER:
-        ESP_LOGD(TAG, "HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
-        break;
-    case HTTP_EVENT_ON_DATA:
-        ESP_LOGD(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-        if (!evt->data)
-        {
-            ESP_LOGW(TAG, "evt->data is NULL");
+    case HTTP_EVENT_ERROR:{
+            ESP_LOGD(TAG, "HTTP_EVENT_ERROR");
+            goto free_output_buffer;
             break;
         }
-
-        int current_total_len = (output_len + evt->data_len);
-        // Nếu có truyền vào một mảng dữ liệu để lưu,
-        // thì copy trực tiếp vào mảng đó
-        if (evt->user_data)
-        {
-            // Nếu tổng chiều dài chuỗi dữ liệu hiện tại đã nhận và dữ liệu sắp nhận nhỏ hơn giới hạn,
-            // thì thực hiện ghép chuỗi.
-            if (current_total_len < MAX_HTTP_OUTPUT_BUFFER)
-            {
-                memcpy(evt->user_data + output_len, evt->data, evt->data_len);
-                ESP_LOGD(TAG, "evt->user_data: %s", (char *)evt->user_data);
-            }
-            // Nếu tổng đó vượt giới hạn,
-            // thì báo lỗi và không ghép chuỗi nữa, cho đến khi nhận được sự kiện HTTP_EVENT_DISCONNECTED.
-            else
-            {
-                ESP_LOGE(TAG, "Response length(%d) is larger than MAX_HTTP_OUTPUT_BUFFER(%d)",
-                         current_total_len,
-                         MAX_HTTP_OUTPUT_BUFFER);
-                err = ESP_FAIL;
-            }
+    case HTTP_EVENT_ON_CONNECTED:{
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_CONNECTED");
+            break;
         }
-        // Nếu không có truyền vào một mảng để lưu thì cấp phát bộ nhớ động cho biến output_buffer.
-        // Biến output_buffer này sẽ được giải phóng khi nhận được 1 trong các sự kiện:
-        // HTTP_EVENT_DISCONNECTED, HTTP_EVENT_ON_FINISH, HTTP_EVENT_ERROR
-        else
-        {
-            // Nếu kiểu phản hồi nhận được không phải là "chunked" (Transfer-Encoding: chunked)
-            // Thì có nghĩa là biết được chiều dài của body thông qua hàm "esp_http_client_get_content_length()"
-            if (!esp_http_client_is_chunked_response(evt->client))
+    case HTTP_EVENT_HEADER_SENT:{
+            ESP_LOGD(TAG, "HTTP_EVENT_HEADER_SENT");
+            break;
+        }
+    case HTTP_EVENT_ON_HEADER:{
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
+            break;
+        }
+    case HTTP_EVENT_ON_DATA:{
+            ESP_LOGD(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+            if (!evt->data)
             {
-                ESP_LOGD(TAG, "response is NOT chunked");
-
-                if (!output_buffer)
-                {
-                    ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %d",esp_get_free_heap_size());
-                    ESP_LOGD(TAG, "esp_http_client_get_content_length=%d", esp_http_client_get_content_length(evt->client));
-                    output_buffer = (char *)calloc(esp_http_client_get_content_length(evt->client), sizeof(char));
-                    output_len = 0;
-                    if (!output_buffer)
-                    {
-                        ESP_LOGE(TAG, "Failed to allocate memory for output buffer");
-                        err = ESP_FAIL;
-                        break;
-                    }
-                }
-                memcpy(output_buffer + output_len, evt->data, evt->data_len);
-                ESP_LOGD(TAG, "output_buffer: %s", output_buffer);
+                ESP_LOGW(TAG, "evt->data is NULL");
+                break;
             }
-            // Nếu là "chunked" thì không biết trước được chiều dài mảng để cấp phát động
-            // phái báo lỗi và không thực hiện copy
-            else
-            {
-                ESP_LOGD(TAG, "response is chunked");
 
+            int current_total_len = (output_len + evt->data_len);
+            // Nếu có truyền vào một mảng dữ liệu để lưu,
+            // thì copy trực tiếp vào mảng đó
+            if (evt->user_data)
+            {
                 // Nếu tổng chiều dài chuỗi dữ liệu hiện tại đã nhận và dữ liệu sắp nhận nhỏ hơn giới hạn,
                 // thì thực hiện ghép chuỗi.
                 if (current_total_len < MAX_HTTP_OUTPUT_BUFFER)
                 {
-                    ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %d",esp_get_free_heap_size());
-                    output_buffer = (char *)reallocarray(output_buffer, (current_total_len + 1), sizeof(char));
-                    if (!output_buffer)
-                    {
-                        ESP_LOGE(TAG, "Failed to allocate memory for output buffer");
-                        err = ESP_FAIL;
-                        break;
-                    }
-                    memcpy(output_buffer + output_len, evt->data, evt->data_len);
-                    ESP_LOGD(TAG, "output_buffer: %s", output_buffer);
-                    // ESP_LOG_BUFFER_HEX(TAG, output_buffer, current_total_len + 1);
+                    memcpy(evt->user_data + output_len, evt->data, evt->data_len);
+                    ESP_LOGD(TAG, "evt->user_data: %s", (char *)evt->user_data);
                 }
                 // Nếu tổng đó vượt giới hạn,
                 // thì báo lỗi và không ghép chuỗi nữa, cho đến khi nhận được sự kiện HTTP_EVENT_DISCONNECTED.
                 else
                 {
                     ESP_LOGE(TAG, "Response length(%d) is larger than MAX_HTTP_OUTPUT_BUFFER(%d)",
-                             current_total_len,
-                             MAX_HTTP_OUTPUT_BUFFER);
+                            current_total_len,
+                            MAX_HTTP_OUTPUT_BUFFER);
                     err = ESP_FAIL;
                 }
             }
-        }
-        memset(evt->data, 0, evt->data_len);
-        output_len += evt->data_len;
-
-        break;
-    case HTTP_EVENT_ON_FINISH:
-        ESP_LOGD(TAG, "HTTP_EVENT_ON_FINISH");
-        break;
-    case HTTP_EVENT_DISCONNECTED:
-        ESP_LOGD(TAG, "HTTP_EVENT_DISCONNECTED");
-        int mbedtls_err = 0;
-        err = esp_tls_get_and_clear_last_error(evt->data, &mbedtls_err, NULL);
-        if (err != ESP_OK)
-        {
-            ESP_LOGI(TAG, "Last esp error code: %s", esp_err_to_name(err));
-            ESP_LOGI(TAG, "Last mbedtls failure: 0x%x", mbedtls_err);
-        }
-
-        // Nếu không có truyền vào một mảng dữ liệu để lưu,
-        // thì in nội dung body đã lấy được (nếu có), mà đã được cấp phát động ở sự kiện HTTP_EVENT_ON_DATA.
-        if (!evt->user_data)
-        {
-            if (output_buffer)
-            {
-                ESP_LOGD(TAG, "final output_buffer: %s", output_buffer);
-            }
+            // Nếu không có truyền vào một mảng để lưu thì cấp phát bộ nhớ động cho biến output_buffer.
+            // Biến output_buffer này sẽ được giải phóng khi nhận được 1 trong các sự kiện:
+            // HTTP_EVENT_DISCONNECTED, HTTP_EVENT_ON_FINISH, HTTP_EVENT_ERROR
             else
             {
-                ESP_LOGD(TAG, "There is no content in body");
+                // Nếu kiểu phản hồi nhận được không phải là "chunked" (Transfer-Encoding: chunked)
+                // Thì có nghĩa là biết được chiều dài của body thông qua hàm "esp_http_client_get_content_length()"
+                if (!esp_http_client_is_chunked_response(evt->client))
+                {
+                    ESP_LOGD(TAG, "response is NOT chunked");
+
+                    if (!output_buffer)
+                    {
+                        ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %lu",esp_get_free_heap_size());
+                        ESP_LOGD(TAG, "esp_http_client_get_content_length=%llu", esp_http_client_get_content_length(evt->client));
+                        output_buffer = (char *)calloc(esp_http_client_get_content_length(evt->client), sizeof(char));
+                        output_len = 0;
+                        if (!output_buffer)
+                        {
+                            ESP_LOGE(TAG, "Failed to allocate memory for output buffer");
+                            err = ESP_FAIL;
+                            break;
+                        }
+                    }
+                    memcpy(output_buffer + output_len, evt->data, evt->data_len);
+                    ESP_LOGD(TAG, "output_buffer: %s", output_buffer);
+                }
+                // Nếu là "chunked" thì không biết trước được chiều dài mảng để cấp phát động
+                // phái báo lỗi và không thực hiện copy
+                else
+                {
+                    ESP_LOGD(TAG, "response is chunked");
+
+                    // Nếu tổng chiều dài chuỗi dữ liệu hiện tại đã nhận và dữ liệu sắp nhận nhỏ hơn giới hạn,
+                    // thì thực hiện ghép chuỗi.
+                    if (current_total_len < MAX_HTTP_OUTPUT_BUFFER)
+                    {
+                        ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %lu",esp_get_free_heap_size());
+                        output_buffer = (char *)reallocarray(output_buffer, (current_total_len + 1), sizeof(char));
+                        if (!output_buffer)
+                        {
+                            ESP_LOGE(TAG, "Failed to allocate memory for output buffer");
+                            err = ESP_FAIL;
+                            break;
+                        }
+                        memcpy(output_buffer + output_len, evt->data, evt->data_len);
+                        ESP_LOGD(TAG, "output_buffer: %s", output_buffer);
+                        // ESP_LOG_BUFFER_HEX(TAG, output_buffer, current_total_len + 1);
+                    }
+                    // Nếu tổng đó vượt giới hạn,
+                    // thì báo lỗi và không ghép chuỗi nữa, cho đến khi nhận được sự kiện HTTP_EVENT_DISCONNECTED.
+                    else
+                    {
+                        ESP_LOGE(TAG, "Response length(%d) is larger than MAX_HTTP_OUTPUT_BUFFER(%d)",
+                                current_total_len,
+                                MAX_HTTP_OUTPUT_BUFFER);
+                        err = ESP_FAIL;
+                    }
+                }
             }
+            memset(evt->data, 0, evt->data_len);
+            output_len += evt->data_len;
+
+            break;
         }
-        goto free_output_buffer;
+    case HTTP_EVENT_ON_FINISH:{
+        ESP_LOGD(TAG, "HTTP_EVENT_ON_FINISH");
         break;
+        }
+    case HTTP_EVENT_DISCONNECTED:{
+            ESP_LOGD(TAG, "HTTP_EVENT_DISCONNECTED");
+            int mbedtls_err = 0;
+            err = esp_tls_get_and_clear_last_error(evt->data, &mbedtls_err, NULL);
+            if (err != ESP_OK)
+            {
+                ESP_LOGI(TAG, "Last esp error code: %s", esp_err_to_name(err));
+                ESP_LOGI(TAG, "Last mbedtls failure: 0x%x", mbedtls_err);
+            }
+
+            // Nếu không có truyền vào một mảng dữ liệu để lưu,
+            // thì in nội dung body đã lấy được (nếu có), mà đã được cấp phát động ở sự kiện HTTP_EVENT_ON_DATA.
+            if (!evt->user_data)
+            {
+                if (output_buffer)
+                {
+                    ESP_LOGD(TAG, "final output_buffer: %s", output_buffer);
+                }
+                else
+                {
+                    ESP_LOGD(TAG, "There is no content in body");
+                }
+            }
+            goto free_output_buffer;
+            break;
+        }
+    case HTTP_EVENT_REDIRECT:{
+            break;
+        }
     }
     return err;
 
