@@ -1,5 +1,5 @@
 #ifndef __KIEMTRAINTERNET_H__
-#define __KIEMTRAINTERNET__
+#define __KIEMTRAINTERNET_H__
 
 #include <stdio.h>
 #include <string.h>
@@ -19,12 +19,13 @@ void GetChipID();
 
 typedef enum
 {
-    CONNECTION_NO_WIFI = 0b00,     // Không có WiFi
-    CONNECTION_NO_INTERNET = 0b01, // Có WiFi nhưng không có Internet
-    CONNECTION_INTERNET_OK = 0b11, // Có Internet
+    CONNECTION_NO_WIFI,
+    CONNECTION_NO_INTERNET,
+    CONNECTION_INTERNET_OK,
 } ConnectionStatus_e;
 
-ConnectionStatus_e KiemTraInternet(void);
-esp_err_t KiemTraDNS(char *host);
+ConnectionStatus_e PingGoogleDNS(void);
+esp_err_t GetDNSInfo(char *host);
+void InsertMACtoAP_SSID();
 
 #endif // __KIEMTRAINTERNET_H__
