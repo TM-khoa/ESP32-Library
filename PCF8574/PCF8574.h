@@ -20,7 +20,7 @@ private:
     i2c_dev_t i2c_dev;
     uint8_t value;
 public:
-    esp_err_t begin(gpio_num_t sda_gpio, gpio_num_t scl_gpio, i2c_port_t port, uint8_t Address);
+    esp_err_t begin(gpio_num_t sda_gpio, gpio_num_t scl_gpio, i2c_port_t port, uint8_t Address,bool PULLUP);
     esp_err_t end();
 
     esp_err_t write_port(uint8_t val);

@@ -10,45 +10,38 @@
  */
 #include "LCD_I2C.h"
 static const char *TAG = "LCD_I2C";
-
-#define LCD_RS          0
-#define LCD_RW          1
-#define LCD_E           2
-#define LCD_D4          3
-#define LCD_D5          4
-#define LCD_D6          5
-#define LCD_D7          6
-#define LCD_BACKLIGHT   7
-
 ClassPCF8574 _PCF8574;
 hd44780_t _LCD;
 
+esp_err_t ClassLCDI2C::testPCF()
+{
+    return _PCF8574.write(0x55);
+}
 
-
-esp_err_t PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
+esp_err_t  PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
 {
     return _PCF8574.write(data);
 }
 
-esp_err_t ClassLCDI2C::begin()
+esp_err_t ClassLCDI2C::begin(i2c_dev_t *dev)
 {
     i2cdev_init();
+    
     esp_err_t err = ESP_OK;
-    err =_PCF8574.begin(    GPIO_NUM_18,
-                            GPIO_NUM_19,
-                            0,
-                            0x20);
-
-    _LCD.pins.d4 = LCD_D4;
-    _LCD.pins.d5 = LCD_D5;
-    _LCD.pins.d6 = LCD_D6;
-    _LCD.pins.d7 = LCD_D7;
-    _LCD.pins.rs = LCD_RS;
-    _LCD.pins.e = LCD_E;
-    _LCD.pins.bl = LCD_BACKLIGHT;
+    err =_PCF8574.begin((gpio_num_t)dev->cfg.sda_io_num,
+                        (gpio_num_t)dev->cfg.scl_io_num,
+                        dev->port,
+                        dev->addr,true);
+    _LCD.pins.d4 = LCD_PCF8574_D4;
+    _LCD.pins.d5 = LCD_PCF8574_D5;
+    _LCD.pins.d6 = LCD_PCF8574_D6;
+    _LCD.pins.d7 = LCD_PCF8574_D7;
+    _LCD.pins.rs = LCD_PCF8574_RS;
+    _LCD.pins.e =  LCD_PCF8574_E;
+    _LCD.pins.bl = LCD_PCF8574_BACKLIGHT;
     _LCD.write_cb = PCF_send_lcd_data;
     _LCD.font = HD44780_FONT_5X8;
-    _LCD.lines = 4;
+    _LCD.lines = LCD_ROWS;
     hd44780_init(&_LCD);
     return err;
 }

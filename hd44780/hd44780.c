@@ -95,14 +95,53 @@ static esp_err_t write_nibble(const hd44780_t *lcd, uint8_t b, bool rs)
 {
     if (lcd->write_cb)
     {
-        uint8_t data = (((b >> 3) & 1) << lcd->pins.d7)
+        /**
+         * write nibble là chỉ ghi một nửa byte dữ liệu tới LCD vì khi sử dụng
+         * 4 chân từ D0 - D7 thay vì 8 chân thì phải gửi 2 lần (datasheet trang 22)
+         * https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
+         * Lấy 4 bit LSB của b đưa vào tương ứng 4 bit trạng thái logic của
+         * D7-D4
+         * Giả sử gán các chân LCD theo các pin sau:
+         * (không thể gán lớn hơn bit 7 vì giới hạn kiểu dữ liệu của các pin là 8 bit)
+         * bit 0: RS
+         * bit 1: E
+         * bit 2: BL
+         * bit 3: D4
+         * bit 4: D5
+         * bit 5: D6
+         * bit 6: D7
+         * 
+         *    7 6543 -> lấy bit 3 -> dịch tới bit d7
+         * 0001 1111
+         *   76 5432 -> lấy bit 2 -> dịch tới bit d6
+         * 0011 1111
+         *  765 4321 -> lấy bit 1 -> dịch tới bit d5
+         * 0111 1111
+         * 7654 3210 -> lấy bit 0 -> dịch tới bit d4
+         * 1111 1111
+         * vì các bit rs,bl,e,D4,D5,D6,D7 độc lập về thứ tự chân và <= hơn 8 bit
+         * nên khởi tạo một biến uint8_t data chứa toàn bộ trạng thái logic các chân LCD.
+         */
+        uint8_t data = (((b >> 3) & 1) << lcd->pins.d7)  
                      | (((b >> 2) & 1) << lcd->pins.d6)
                      | (((b >> 1) & 1) << lcd->pins.d5)
                      | ((b & 1) << lcd->pins.d4)
                      | (rs ? 1 << lcd->pins.rs : 0)
+                     // kiểm tra logic chân bl có là 1 hay không, nếu có thì dịch 1 đến chân bl, không thì giữ nguyên
                      | (lcd->backlight ? 1 << lcd->pins.bl : 0);
+        /**
+         * Theo timing diagram của LCD thì cần xuất chân E lên 1 -> gửi data
+         * sau đó đưa E xuống 0
+         * lcd->write_cb là một function pointer có 2 đối số truyền vào là 
+         * hd44780_t *lcd và uint8_t data và trả về kiểu esp_err_t
+         */
         CHECK(lcd->write_cb(lcd, data | (1 << lcd->pins.e)));
         toggle_delay();
+        /**
+         * vì không điều khiển được trực tiếp LCD mà phải gửi 1 đoạn byte thông qua module chuyển đổi
+         * nên phải gửi đoạn byte thừa sau khi cho E xuống 0 (LCD không nhận data khi E = 0)
+         */
+        
         CHECK(lcd->write_cb(lcd, data));
     }
     else
@@ -115,6 +154,7 @@ static esp_err_t write_nibble(const hd44780_t *lcd, uint8_t b, bool rs)
         CHECK(gpio_set_level(lcd->pins.d5, (b >> 1) & 1));
         CHECK(gpio_set_level(lcd->pins.d4, b & 1));
         toggle_delay();
+        // ở dưới đây điều khiển trực tiếp chân E
         CHECK(gpio_set_level(lcd->pins.e, false));
     }
 
@@ -123,16 +163,23 @@ static esp_err_t write_nibble(const hd44780_t *lcd, uint8_t b, bool rs)
 
 static esp_err_t write_byte(const hd44780_t *lcd, uint8_t b, bool rs)
 {
-    CHECK(write_nibble(lcd, b >> 4, rs));
-    CHECK(write_nibble(lcd, b, rs));
+    // nếu gửi instruction thì rs = false, nếu gửi data thì rs = true
+    CHECK(write_nibble(lcd, b >> 4, rs)); // ghi 4 bit MSB
+    CHECK(write_nibble(lcd, b, rs)); // ghi 4 bit LSB còn lại
 
     return ESP_OK;
 }
 
 esp_err_t hd44780_init(const hd44780_t *lcd)
 {
+    //Kiểm tra struct lcd != NULL và số dòng nhỏ hơn 5
     CHECK_ARG(lcd && lcd->lines > 0 && lcd->lines < 5);
 
+    /**
+     * @brief Nếu không sử dụng function pointer write_cb thì khai báo
+     * cấu hình chân GPIO của LCD như bình thường
+     * 
+     */
     if (!lcd->write_cb)
     {
         gpio_config_t io_conf;
