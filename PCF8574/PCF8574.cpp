@@ -16,12 +16,20 @@ static const char *TAG = "PCF8574";
             return ESP_ERR_INVALID_ARG; \
     } while (0)
 
-esp_err_t ClassPCF8574::begin(gpio_num_t sda_gpio, gpio_num_t scl_gpio, i2c_port_t port, uint8_t Address){
+esp_err_t ClassPCF8574::begin(  gpio_num_t sda_gpio, 
+                                gpio_num_t scl_gpio, 
+                                i2c_port_t port, 
+                                uint8_t Address,
+                                bool PULLUP)
+{
     this->i2c_dev.port = port;
     this->i2c_dev.addr = Address;
     this->i2c_dev.cfg.sda_io_num = sda_gpio;
     this->i2c_dev.cfg.scl_io_num = scl_gpio;
-
+    if(PULLUP){
+        this->i2c_dev.cfg.scl_pullup_en = true;
+        this->i2c_dev.cfg.sda_pullup_en = true;
+    }
 #if HELPER_TARGET_IS_ESP32
     this->i2c_dev.cfg.master.clk_speed = PCF8574_I2C_FREQ_HZ;
 #endif
