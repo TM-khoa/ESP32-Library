@@ -15,7 +15,7 @@ using namespace std;
 
 #include "PCF8574.h"
 #include "hd44780.h"
-#include "../../build/config/sdkconfig.h"
+// #include "../../build/config/sdkconfig.h"
 
 #define LCD_PCF8574_RS          CONFIG_LCD_RS_PIN
 #define LCD_PCF8574_E           CONFIG_LCD_E_PIN

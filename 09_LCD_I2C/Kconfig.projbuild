@@ -1,4 +1,4 @@
-menu "LCD I2C mapping"
+menu "Custom LCD I2C mapping"
 config LCD_RS_PIN
     int "LCD RS pin"
     default 0

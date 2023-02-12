@@ -18,7 +18,7 @@ esp_err_t ClassLCDI2C::testPCF()
     return _PCF8574.write(0x55);
 }
 
-esp_err_t  PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
+static inline esp_err_t  PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
 {
     return _PCF8574.write(data);
 }
