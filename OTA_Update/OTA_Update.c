@@ -1,5 +1,5 @@
 #include "CapNhatFirmwareOTA.h"
-static const char *TAG = "CapNhatFirmwareOTA";
+static const char *TAG = "OTA";
 
 esp_err_t CapNhatFirmwareChoBoard(char *ota_link)
 {

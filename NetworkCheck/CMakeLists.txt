@@ -1,6 +1,6 @@
 idf_component_register(
-    SRCS KiemTraInternet.cpp
+    SRCS NetworkCheck.cpp
     INCLUDE_DIRS .
-    REQUIRES    03_CauHinhWiFiTuDong 
+    REQUIRES    WiFiManager 
                 esp_hw_support
 )
