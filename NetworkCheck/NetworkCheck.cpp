@@ -52,9 +52,6 @@ ConnectionStatus_e PingGoogleDNS(void)
     return InternetStatus;
 }
 
-/**
- * 
-*/
 esp_err_t GetDNSInfo(char *host)
 {
     esp_err_t err = ESP_OK;

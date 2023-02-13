@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS CapNhatFirmwareOTA.c
+    SRCS OTA_Update.c
     INCLUDE_DIRS .
     REQUIRES    spi_flash 
                 app_update 
