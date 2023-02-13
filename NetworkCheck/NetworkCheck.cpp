@@ -1,6 +1,6 @@
-#include "KiemTraInternet.h"
+#include "NetworkCheck.h"
 
-static const char *TAG = "KiemTraInternet";
+static const char *TAG = "NetworkCheck";
 
 static ConnectionStatus_e InternetStatus;
 
@@ -48,7 +48,7 @@ void InsertMACtoAP_SSID()
  */
 ConnectionStatus_e PingGoogleDNS(void)
 {
-    GetDNSInfo("google.com");
+    GetDNSInfo((char*)"google.com");
     return InternetStatus;
 }
 
