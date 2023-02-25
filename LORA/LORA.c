@@ -75,6 +75,12 @@ const char* TAG = "LoRaWAN";
 #define LoRaWAN_MOSI_GPIO 12
 #define LoRaWAN_SCK_GPIO 14
 
+// #define LoRaWAN_CS_GPIO 15
+// #define LoRaWAN_RST_GPIO 27
+// #define LoRaWAN_MISO_GPIO 12
+// #define LoRaWAN_MOSI_GPIO 13
+// #define LoRaWAN_SCK_GPIO 14
+
 static spi_device_handle_t __spi;
 
 static int __implicit;
