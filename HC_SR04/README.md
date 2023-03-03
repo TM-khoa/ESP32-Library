@@ -74,7 +74,30 @@ ESP_ERROR_CHECK(mcpwm_capture_channel_register_event_callbacks(cap_chan, &cbs, c
 
 Hàm *mcpwm_capture_channel_register_event_callbacks* dùng để đăng ký một sự kiện ngắt ISR cho kênh Capture (Capture channel hay viết tắt là *cap_chan*), sự kiện đó sẽ gọi tới hàm ISR tên là  **hc_sr04_echo_callback** để thực hiện khi xảy ra sự kiện ngắt (truyền vào đối số là một function pointer trỏ đến chương trình cần thực thi _**&cbs**_),
 
-Đối số thứ 3 (**cur_task** hay **current task**) là một **user_data** do người dùng đưa vào chương trình ngắt, trong trường hợp này là địa chỉ **Handle**  đang quản lý Task HC_SR04 để thực hiện **Notify Task** 
+Đối số thứ 3 (**cur_task** hay **current task**) là một **user_data** do người dùng đưa vào chương trình ngắt, trong trường hợp này là địa chỉ **Handle**  đang quản lý Task HC_SR04 để thực hiện **Notify Task** (xem mục 2. Chương trình ngắt *hc_sr04_echo_callback*)
+
+Sau khi thực hiện khởi tạo và cấu hình kênh, tiếp theo cần cho phép kênh hoạt động:
+
+```
+ESP_ERROR_CHECK(mcpwm_capture_channel_enable(cap_chan));
+```
+
+Cấu hình chân TRIGGER
+
+```
+gpio_config_t io_conf = {
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = 1ULL << HC_SR04_TRIGGER_GPIO,
+};
+ESP_ERROR_CHECK(gpio_config(&io_conf));
+```
+
+Cho phép và chạy bộ capture timer
+
+```
+ESP_ERROR_CHECK(mcpwm_capture_timer_enable(cap_timer));
+ESP_ERROR_CHECK(mcpwm_capture_timer_start(cap_timer));
+```
 
 ## 2.Chương trình ngắt *hc_sr04_echo_callback*:
 
@@ -138,3 +161,7 @@ void gen_trig_output(void)
     gpio_set_level(HC_SR04_TRIGGER_GPIO, 0); // set low
 }
 ```
+
+## 4.Phụ lục
+
+Đọc thêm về mcpwm (motor control pulse width modulator) [ở đây](https://github.com/espressif/esp-idf/blob/35926387738ba28c0c84d29c6e803ed15c5a8ae7/docs/en/api-reference/peripherals/mcpwm.rst)
