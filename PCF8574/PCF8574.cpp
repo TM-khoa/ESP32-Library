@@ -1,4 +1,5 @@
 #include "PCF8574.h"
+#ifdef CONFIG_USE_PCF8574
 static const char *TAG = "PCF8574";
 
 #define CHECK(x)                \
@@ -68,3 +69,4 @@ esp_err_t ClassPCF8574::write(uint8_t pin, bool val){
     (val) ? (temp |= (0x01 << pin)) : (temp &= ~(1 << pin));
     return write(temp);
 }
+#endif

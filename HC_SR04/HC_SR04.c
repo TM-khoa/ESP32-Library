@@ -1,4 +1,5 @@
 #include "HC_SR04.h"
+#ifdef CONFIG_USE_HCSR04
 const char* HC_SR04TAG = "HC_SR04";
 
 static bool hc_sr04_echo_callback(mcpwm_cap_channel_handle_t cap_chan, const mcpwm_capture_event_data_t *edata, void *user_data)
@@ -80,3 +81,4 @@ esp_err_t HC_SR04_init()
 
     return ESP_OK;
 }
+#endif

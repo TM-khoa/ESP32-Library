@@ -1,6 +1,8 @@
 
 #ifndef __LORA_H__
 #define __LORA_H__
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_LORA
 
 void lora_reset(void);
 void lora_explicit_header_mode(void);
@@ -27,4 +29,5 @@ void lora_close(void);
 int lora_initialized(void);
 void lora_dump_registers(void);
 
+#endif
 #endif

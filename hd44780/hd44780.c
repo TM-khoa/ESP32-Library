@@ -36,12 +36,13 @@
  *
  * BSD Licensed as described in the file LICENSE
  */
+#include "hd44780.h"
+#ifdef CONFIG_USE_HD44780
 #include <string.h>
 #include <esp_system.h>
 #include <esp_idf_lib_helpers.h>
 #include <esp_log.h> // to include ets_sys.h
 #include "rom/ets_sys.h"
-#include "hd44780.h"
 
 #define MS 1000
 
@@ -337,3 +338,4 @@ esp_err_t hd44780_scroll_right(const hd44780_t *lcd)
 
     return ESP_OK;
 }
+#endif

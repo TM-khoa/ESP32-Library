@@ -41,6 +41,8 @@
 #ifndef __DS3231_H__
 #define __DS3231_H__
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_DS3231
 #include <time.h>
 #include <stdbool.h>
 #include <i2cdev.h>
@@ -314,3 +316,4 @@ esp_err_t ds3231_get_temp_float(i2c_dev_t *dev, float *temp);
 /**@}*/
 
 #endif  /* __DS3231_H__ */
+#endif

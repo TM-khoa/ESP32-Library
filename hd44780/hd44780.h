@@ -41,6 +41,9 @@
 #ifndef __HD44780_H__
 #define __HD44780_H__
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_HD44780
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <driver/gpio.h>
@@ -192,3 +195,4 @@ esp_err_t hd44780_scroll_right(const hd44780_t *lcd);
 /**@}*/
 
 #endif /* __HD44780_H__ */
+#endif

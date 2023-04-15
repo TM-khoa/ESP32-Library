@@ -1,9 +1,11 @@
 #ifndef __PCF8574_H__
 #define __PCF8574_H__
 
+#include "../LibraryConfig.h"
+
+#ifdef CONFIG_USE_PCF8574
 #include "esp_log.h"
 #include "driver/gpio.h"
-
 #include <stdbool.h>
 #include <stdlib.h>
 #include <i2cdev.h>
@@ -31,3 +33,4 @@ public:
 
 
 #endif // __PCF8574_H__
+#endif

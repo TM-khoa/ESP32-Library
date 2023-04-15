@@ -1,4 +1,5 @@
 #include "pwm.h"
+#ifdef CONFIG_USE_PWM
 static const char *PWMTAG = "example";
 void pwm_init(void)
 {
@@ -51,3 +52,4 @@ void pwm_init(void)
     ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, 900));
 
 }
+#endif

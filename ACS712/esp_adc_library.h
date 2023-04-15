@@ -3,7 +3,7 @@
 #include "esp_log.h"
 #define TAG_ESP_ADC_LIB "esp_adc_lib"
 
-#define ADC_READ(_X_) adc1_get_raw(_X_)
+
 #define micros() esp_log_early_timestamp()
 
 #define ACS1 ADC1_CHANNEL_7

@@ -1,10 +1,8 @@
 #include "ACS712.h"
-#include "esp_adc_library.h"
+#include "esp_adc/adc_cali.h"
 #include "math.h"
 
-#define zero pACS->zero
-#define sensitivity pACS->sensitivity
-#define pin pACS->pin
+#ifdef CONFIG_USE_ACS712
 
 int ACS712_calib(acs712_t *pACS) {
 	uint16_t acc = 0;
@@ -64,3 +62,4 @@ void ACS712_setZeroPoint(acs712_t *pACS, int _zero) {
 void ACS712_setSensitivity(acs712_t *pACS, float sens) {
 	sensitivity = sens;
 }
+#endif

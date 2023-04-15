@@ -1,6 +1,9 @@
 #ifndef _ACS712_H_
 #define _ACS712_H_
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_ACS712
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -8,17 +11,18 @@
 #define VREF 5.0
 #define DEFAULT_FREQUENCY 50
 
+#define zero pACS->zero
+#define sensitivity pACS->sensitivity
+#define pin pACS->pin
+#define ADC_READ(X) adc1_get_raw(X)
 enum ACS712_type {ACS712_05B, ACS712_20A, ACS712_30A};
 
-struct acs712_t{
-	enum ACS712_type type;
+typedef struct ACS712_t{
 	int zero;
 	float sensitivity;
 	uint8_t pin;
 	uint32_t raw_value;
-};
-typedef struct acs712_t acs712_t;
-#define ACS712 acs712_t *pACS
+}ACS712_t;
 
 
 /**
@@ -34,21 +38,4 @@ float ACS712_getCurrentDC(acs712_t *pACS);
 float ACS712_getCurrentAC(acs712_t *pACS, uint16_t frequency);
 
 #endif
-
-
-
-
-// class ACS712 {
-// public:
-	// ACS712(ACtS712_type type, uint8_t _pin);
-// 	int calibrate();
-// 	void setZeroPoint(int _zero);
-// 	void setSensitivity(float sens);
-// 	float getCurrentDC();
-// 	float getCurrentAC(uint16_t frequency = 50);
-
-// private:
-// 	int zero = 512;
-// 	float sensitivity;
-// 	uint8_t pin;
-// };
+#endif

@@ -10,6 +10,9 @@
 #ifndef __HC_SR04_H__
 #define __HC_SR04_H__
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_HCSR04
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <driver/gpio.h>
@@ -32,3 +35,4 @@ esp_err_t HC_SR04_init();
 #endif
 
 #endif /* __ULTRASONIC_H__ */
+#endif

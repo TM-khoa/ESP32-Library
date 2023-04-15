@@ -36,9 +36,11 @@
  *
  * MIT Licensed as described in the file LICENSE
  */
+
+#include "ds3231.h"
+#ifdef CONFIG_USE_DS3231
 #include <esp_err.h>
 #include <esp_idf_lib_helpers.h>
-#include "ds3231.h"
 
 #define I2C_FREQ_HZ 400000
 
@@ -421,3 +423,4 @@ esp_err_t ds3231_get_time(i2c_dev_t *dev, struct tm *time)
 
     return ESP_OK;
 }
+#endif

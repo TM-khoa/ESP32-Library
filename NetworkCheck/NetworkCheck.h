@@ -1,6 +1,9 @@
 #ifndef __KIEMTRAINTERNET_H__
 #define __KIEMTRAINTERNET_H__
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_NET_CHECK
+
 #include <stdio.h>
 #include <string.h>
 
@@ -30,3 +33,4 @@ esp_err_t GetDNSInfo(char *host);
 void InsertMACtoAP_SSID();
 
 #endif // __KIEMTRAINTERNET_H__
+#endif

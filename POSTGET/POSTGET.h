@@ -1,11 +1,13 @@
 #ifndef _HTTP_CLIENT_UTILS_H_
 #define _HTTP_CLIENT_UTILS_H_
 
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#include "../LibraryConfig.h"
 #include <stdlib.h>
 #include <string.h>
 #include "esp_err.h"
@@ -57,6 +59,7 @@ typedef enum
     HTTP_Conflict,
 } HTTP_CODE_e;
 
+
 typedef enum
 {
     DL_TYPE_CHUNCK,
@@ -69,6 +72,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt);
 HTTP_CODE_e http_get(char *url, char *response);
 HTTP_CODE_e http_post(char *url, char *body);
 HTTP_CODE_e http_head(char *url);
+
 
 #ifdef __cplusplus
 }

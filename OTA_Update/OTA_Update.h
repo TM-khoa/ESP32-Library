@@ -1,6 +1,9 @@
 #ifndef _OTA_H_
 #define _OTA_H_
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_OTA
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -28,3 +31,4 @@ esp_err_t CapNhatFirmwareChoBoard(char *ota_link);
 #endif
 
 #endif // _OTA_H_
+#endif

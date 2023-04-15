@@ -1,6 +1,9 @@
 #ifndef _LCD_I2C_H_
 #define _LCD_I2C_H_
 
+
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_LCDI2C
 #include "esp_log.h"
 #include "driver/gpio.h"
 
@@ -39,9 +42,5 @@ public:
     esp_err_t print(const char *S, uint8_t x, uint8_t y);
     esp_err_t testPCF();
 };
-
-
-
-
-
 #endif // LCD_I2C_H
+#endif

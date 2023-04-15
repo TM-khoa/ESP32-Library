@@ -1,4 +1,5 @@
-    #include "OTA_Update.h"
+#include "OTA_Update.h"
+#ifdef CONFIG_USE_OTA
 static const char *TAG = "OTA";
 
 esp_err_t CapNhatFirmwareChoBoard(char *ota_link)
@@ -61,3 +62,4 @@ ota_end:
     }
     return err;
 }
+#endif

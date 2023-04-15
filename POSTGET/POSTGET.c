@@ -1,4 +1,5 @@
 #include "POSTGET.h"
+#ifdef CONFIG_USE_POSTGET
 static const char *TAG = "POSTGET";
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt)
@@ -391,10 +392,8 @@ HTTP_CODE_e http_get_KiemTraLink(char *url)
     }
     int content_length = esp_http_client_fetch_headers(client);
     http_code_response = esp_http_client_get_status_code(client);
-    // ESP_LOGD(TAG, "HTTP Stream reader Status = %d, content_length = %d",
-    //          http_code_response,
-    //          content_length);
 
     esp_http_client_cleanup(client);
     return http_code_response;
 }
+#endif

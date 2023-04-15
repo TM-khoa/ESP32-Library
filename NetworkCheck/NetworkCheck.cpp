@@ -1,5 +1,5 @@
 #include "NetworkCheck.h"
-
+#ifdef CONFIG_USE_NET_CHECK
 static const char *TAG = "NetworkCheck";
 
 static ConnectionStatus_e InternetStatus;
@@ -81,3 +81,4 @@ esp_err_t GetDNSInfo(char *host)
     }
     return err;
 }
+#endif
