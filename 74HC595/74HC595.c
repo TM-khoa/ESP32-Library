@@ -8,62 +8,64 @@
 #include "74HC595.h"
 #include "esp_log.h"
 #ifdef CONFIG_USE_74HC595
-HC595 *devTemp = NULL;
-HC595_Status_t HC595_AssignPin(HC595* dev, uint16_t pin, pinName pinName)
+HC595 *_hc595 = NULL;
+HC595_Status_t HC595_AssignPin(HC595* hc595, uint16_t pin, pinName pinName)
 {
-	if(dev) devTemp = dev;
+	if(hc595) _hc595 = hc595;
 	switch(pinName){
 	case HC595_CLK:
-		dev->clk.pin = pin;
+		hc595->clk.pin = pin;
 		break;
 	case HC595_DS:
-		dev->ds.pin = pin;
+		hc595->ds.pin = pin;
 		break;
 	case HC595_LATCH:
-		dev->latch.pin = pin;
+		hc595->latch.pin = pin;
 		break;
 	case HC595_OE:
-		dev->oe.pin = pin;
+		hc595->oe.pin = pin;
 		break;
 	}
 	return ESP_OK;
 }
 
-void HC595_SetTarget(HC595 *dev)
+void HC595_SetTarget(HC595 *hc595)
 {
-	devTemp = dev;
+	_hc595 = hc595;
 }
 
 /**
- * @brief Send array of data to multiple Cascade HC595
+ * @brief Sends data to cascaded 74HC595 shift registers.
  * 
- * @param dt pointer point to array contain output bit
- * @param n number of HC595 in Cascade
- * @return HC595_Status_t 
+ * This function shifts data into multiple cascaded 74HC595 registers.
+ * 
+ * @param dt Pointer to an array of uint8_t data to be shifted into the registers.
+ * @param n Number of cascaded 74HC595 shift registers.
+ * @return HC595_Status_t status code indicating the result of the operation.
  */
 HC595_Status_t HC595_Send_Data(uint8_t *dt,uint8_t n)
 {
-	if(!devTemp && !n) return ESP_ERR_INVALID_ARG;
+	
+	if(!_hc595 && !n) return HC595_INVALID_ARG;
 	for(uint8_t i=0; i<(n*8); i++)
 	{
 		if(*(dt+(i/8)) & 0x80) HC595_WRITE(HC595_DS,1);
 		else HC595_WRITE(HC595_DS,0);
-		HC595_WRITE(HC595_CLK,0); 
-		HC595_WRITE(HC595_CLK,0); 
+		HC595_WRITE(HC595_CLK,0);
+		HC595_WRITE(HC595_CLK,0);
 		HC595_WRITE(HC595_CLK,1);
 		HC595_WRITE(HC595_CLK,1);
 		*(dt+(i/8)) <<= 1;
 	}
 	HC595_WRITE(HC595_LATCH,0);
 	HC595_WRITE(HC595_LATCH,1);
-	return ESP_OK;
+	return HC595_OK;
 }
 // (Qn output)
 // n là ouput Qn cần test ( từ Q0-> Qn max)
 // hc_max là số hc595 hiện có
 HC595_Status_t HC595_Test_OutputPin(uint8_t n,uint8_t hc_max)
 {
-	if(!devTemp) return ESP_ERR_INVALID_ARG;
 	// Ý tưởng : Khi muốn gửi đến 1 bit bất kỳ bắt buộc phải gửi từ Qn max trước
 	// => Tính toán và gửi các dummy byte sau đó sẽ gửi bit cần gửi
 	// Ví dụ cho code bên dưới : n = 13, hc_max = 5 ( có 5 HC595 => Qn max = 39, nhưng chỉ muốn test Qn với n = 13)
@@ -94,24 +96,24 @@ HC595_Status_t HC595_Test_OutputPin(uint8_t n,uint8_t hc_max)
 
 void HC595_TestOutput()
 {
-	static uint16_t dataOriginal=1;
+	static uint16_t dataOriginal= 0x0200;
 	static uint8_t shft=0;
 	uint8_t data[2];
 	shft++;
-	dataOriginal<<=1;
-	if(shft==15) {
+	dataOriginal>>=1;
+	dataOriginal|=0x0200;
+	if(shft==10) {
 		shft = 0;
-		dataOriginal = 1;
+		dataOriginal = 0x0200;
 	}
 	data[0]=dataOriginal >> 8;
 	data[1]=dataOriginal;
 	HC595_Send_Data(data,2);
-	DELAY_MS(50);
+	DELAY_MS(100);
 }
 
 void HC595_TestPin(pinName pinName)
 {
-	while(!devTemp);
 	HC595_WRITE(pinName,1);
 	DELAY_MS(2000);
 	HC595_WRITE(pinName,0);

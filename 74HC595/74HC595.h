@@ -13,8 +13,6 @@
 #include "driver/gpio.h"
 #ifdef CONFIG_USE_74HC595
 
-typedef esp_err_t HC595_Status_t;
-
 typedef struct {
 	uint16_t pin;
 }pinConfig;
@@ -34,10 +32,17 @@ typedef enum{
 }pinName;
 
 
-#define latchPin devTemp->latch.pin
-#define clkPin devTemp->clk.pin
-#define dsPin devTemp->ds.pin
-#define oePin devTemp->oe.pin
+typedef enum{
+	HC595_OK,
+	HC595_ERROR,
+	HC595_INVALID_ARG,
+}HC595_Status_t;
+
+
+#define latchPin _hc595->latch.pin
+#define clkPin _hc595->clk.pin
+#define dsPin _hc595->ds.pin
+#define oePin _hc595->oe.pin
 #define HC595_WRITE(PIN,LOGIC) ( 	((PIN) == HC595_LATCH)  ? 	gpio_set_level(latchPin,(LOGIC)) 	:	\
 									((PIN) == HC595_CLK) 	?	gpio_set_level(clkPin,(LOGIC)) 		: 	\
 									((PIN) == HC595_OE) 	?	gpio_set_level(oePin,(LOGIC)) 		: 	\
