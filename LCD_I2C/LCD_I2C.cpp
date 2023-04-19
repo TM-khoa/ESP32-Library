@@ -10,6 +10,7 @@
  */
 #include "LCD_I2C.h"
 #ifdef CONFIG_USE_LCDI2C
+#if defined(CONFIG_USE_CPP)
 static const char *TAG = "LCD_I2C";
 ClassPCF8574 _PCF8574;
 hd44780_t _LCD;
@@ -62,4 +63,5 @@ esp_err_t ClassLCDI2C::TurnOffBackLight() {return hd44780_switch_backlight(&_LCD
 
 
 esp_err_t ClassLCDI2C::clear(){return hd44780_clear(&_LCD);}
-#endif
+#endif /*CONFIG_USE_CPP*/
+#endif /*CONFIG_USE_LCDI2C*/

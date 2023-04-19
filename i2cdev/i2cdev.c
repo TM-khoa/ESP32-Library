@@ -7,11 +7,14 @@
  *
  * MIT Licensed as described in the file LICENSE
  */
+
+
+#include "i2cdev.h"
+#ifdef CONFIG_USE_I2CDEV
 #include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_log.h>
-#include "i2cdev.h"
 
 static const char *TAG = "i2cdev";
 
@@ -296,3 +299,4 @@ esp_err_t i2c_dev_write_reg(const i2c_dev_t *dev, uint8_t reg,
 {
     return i2c_dev_write(dev, &reg, 1, out_data, out_size);
 }
+#endif

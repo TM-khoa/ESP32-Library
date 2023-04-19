@@ -1,21 +1,9 @@
 #include "PCF8574.h"
 #ifdef CONFIG_USE_PCF8574
+#if defined(CONFIG_USE_CPP)
 static const char *TAG = "PCF8574";
 
-#define CHECK(x)                \
-    do                          \
-    {                           \
-        esp_err_t __;           \
-        if ((__ = x) != ESP_OK) \
-            return __;          \
-    } while (0)
 
-#define CHECK_ARG(VAL)                  \
-    do                                  \
-    {                                   \
-        if (!(VAL))                     \
-            return ESP_ERR_INVALID_ARG; \
-    } while (0)
 
 esp_err_t ClassPCF8574::begin(  gpio_num_t sda_gpio, 
                                 gpio_num_t scl_gpio, 
@@ -69,4 +57,5 @@ esp_err_t ClassPCF8574::write(uint8_t pin, bool val){
     (val) ? (temp |= (0x01 << pin)) : (temp &= ~(1 << pin));
     return write(temp);
 }
-#endif
+#endif /*CONFIG_USE_CPP*/
+#endif /*CONFIG_USE_PCF8574*/

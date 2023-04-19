@@ -12,6 +12,9 @@
 #ifndef __I2CDEV_H__
 #define __I2CDEV_H__
 
+#include "../LibraryConfig.h"
+#ifdef CONFIG_USE_I2CDEV
+
 #include <driver/i2c.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
@@ -195,4 +198,5 @@ esp_err_t i2c_dev_write_reg(const i2c_dev_t *dev, uint8_t reg,
 
 /**@}*/
 
+#endif
 #endif /* __I2CDEV_H__ */
