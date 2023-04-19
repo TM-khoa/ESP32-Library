@@ -22,6 +22,7 @@ typedef struct HC595{
 	pinConfig clk;
 	pinConfig latch;
 	pinConfig oe;
+	uint8_t data[4];
 }HC595;
 
 typedef enum{
@@ -51,6 +52,7 @@ typedef enum{
 
 #define DELAY_MS(X) (vTaskDelay(X/portTICK_PERIOD_MS))
 
+HC595_Status_t HC595_Set_Data(uint32_t data);
 HC595_Status_t HC595_Send_Data(uint8_t *dt,uint8_t n);
 HC595_Status_t HC595_AssignPin(HC595* dev,uint16_t pin, pinName pinName);
 void HC595_SetTarget(HC595 *dev);

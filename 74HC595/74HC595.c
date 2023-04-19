@@ -34,6 +34,11 @@ void HC595_SetTarget(HC595 *hc595)
 	_hc595 = hc595;
 }
 
+HC595_Status_t HC595_Set_Data(uint32_t data)
+{
+	return HC595_OK;
+}
+
 /**
  * @brief Sends data to cascaded 74HC595 shift registers.
  * 
@@ -47,7 +52,7 @@ HC595_Status_t HC595_Send_Data(uint8_t *dt,uint8_t n)
 {
 	
 	if(!_hc595 && !n) return HC595_INVALID_ARG;
-	for(uint8_t i=0; i<(n*8); i++)
+	for(int8_t i=(n*8)-1; i > -1; i--)
 	{
 		if(*(dt+(i/8)) & 0x80) HC595_WRITE(HC595_DS,1);
 		else HC595_WRITE(HC595_DS,0);
