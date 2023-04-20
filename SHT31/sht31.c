@@ -85,4 +85,6 @@ esp_err_t sht31_read_temp_humi(float *temp, float *humi){
         *humi = 100 * (float)(data_read[3] * 256 + data_read[4]) / 65535.0;
         return ESP_OK;
     }
+
+    free (data_read);
 }
