@@ -13,6 +13,21 @@
 #include "driver/gpio.h"
 #ifdef CONFIG_USE_74HC595
 
+#define HC595_MAX_CASCADE 4
+#define DELAY_MS(X) (vTaskDelay(X/portTICK_PERIOD_MS))
+#define HC595_SET_OUTPUT(X)(1<<X)
+#define HC595_SET_OUTPUT(X)(1<<X)
+
+#define latchPin _hc595->latch.pin
+#define clkPin _hc595->clk.pin
+#define dsPin _hc595->ds.pin
+#define oePin _hc595->oe.pin
+#define HC595_WRITE(PIN,LOGIC) ( 	((PIN) == HC595_LATCH)  ? 	gpio_set_level(latchPin,(LOGIC)) 	:	\
+									((PIN) == HC595_CLK) 	?	gpio_set_level(clkPin,(LOGIC)) 		: 	\
+									((PIN) == HC595_OE) 	?	gpio_set_level(oePin,(LOGIC)) 		: 	\
+									((PIN) == HC595_DS) 	?	gpio_set_level(dsPin,(LOGIC)) 		: 0	\
+								)
+
 typedef struct {
 	uint16_t pin;
 }pinConfig;
@@ -22,7 +37,7 @@ typedef struct HC595{
 	pinConfig clk;
 	pinConfig latch;
 	pinConfig oe;
-	uint8_t data[4];
+	uint32_t data;
 }HC595;
 
 typedef enum{
@@ -37,24 +52,15 @@ typedef enum{
 	HC595_OK,
 	HC595_ERROR,
 	HC595_INVALID_ARG,
+	HC595_BEYOND_MAX_CASCADE,
 }HC595_Status_t;
 
-
-#define latchPin _hc595->latch.pin
-#define clkPin _hc595->clk.pin
-#define dsPin _hc595->ds.pin
-#define oePin _hc595->oe.pin
-#define HC595_WRITE(PIN,LOGIC) ( 	((PIN) == HC595_LATCH)  ? 	gpio_set_level(latchPin,(LOGIC)) 	:	\
-									((PIN) == HC595_CLK) 	?	gpio_set_level(clkPin,(LOGIC)) 		: 	\
-									((PIN) == HC595_OE) 	?	gpio_set_level(oePin,(LOGIC)) 		: 	\
-									((PIN) == HC595_DS) 	?	gpio_set_level(dsPin,(LOGIC)) 		: 0	\
-								)
-
-#define DELAY_MS(X) (vTaskDelay(X/portTICK_PERIOD_MS))
-
-HC595_Status_t HC595_Set_Data(uint32_t data);
-HC595_Status_t HC595_Send_Data(uint8_t *dt,uint8_t n);
+HC595_Status_t HC595_Send_Data(uint8_t *dt,uint8_t n,bool ClearData,uint8_t LSB_FIRST);
 HC595_Status_t HC595_AssignPin(HC595* dev,uint16_t pin, pinName pinName);
+void HC595_SetBitOutput(uint8_t pos);
+void HC595_ClearBitOutput(uint8_t pos);
+void HC595_SetByteOutput(uint32_t value,uint8_t pos);
+void HC595_ClearByteOutput(uint32_t value,uint8_t pos);
 void HC595_SetTarget(HC595 *dev);
 void HC595_TestPin(pinName pin);
 void HC595_Disable();
