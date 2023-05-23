@@ -1,5 +1,5 @@
 /*
- * String_Handle.c
+ * StringUtility.c
  *
  *  Created on: Apr 8, 2023
  *      Author: SpiritBoi
@@ -10,7 +10,7 @@
 
 char ArrBuffStr[MAX_STRING_BUFFER][MAX_STRING_LENGTH];
 
-StringStatus_t StringHandle_TokenMessage(char *String)
+StringStatus_t StrUtil_TokenMessage(char *String)
 {
 	if(!String) return STRING_NULL;
 	char *p;
@@ -30,7 +30,7 @@ StringStatus_t StringHandle_TokenMessage(char *String)
 	return STRING_OK;
 }
 
-StringStatus_t StringHandle_TokenKeyValue(char *String)
+StringStatus_t StrUtil_TokenKeyValue(char *String)
 {
 	if(!String) return STRING_NULL;
 	char *p;
@@ -42,9 +42,11 @@ StringStatus_t StringHandle_TokenKeyValue(char *String)
 	if(strlen(p) < MAX_STRING_LENGTH){
 	    strcpy(String,p);
 	} else return STRING_TOKEN_LENGTH_TOO_LONG; 
+	return STRING_OK;
 }
 
-StringStatus_t StringHandle_SearchKey(char *String, char* KeySearch){
+StringStatus_t StrUtil_SearchKey(char *String, char* KeySearch)
+{
 	char *c;
 	for(uint8_t i=0;i<sizeof(MAX_STRING_BUFFER);i++)
 	{
@@ -54,16 +56,17 @@ StringStatus_t StringHandle_SearchKey(char *String, char* KeySearch){
 	return STRING_KEY_NOT_FOUND;
 }
 
-void StringHandle_ReturnValueToString(char *s,StringStatus_t retVal){
-    switch(retVal){
-        case STRING_KEY_FOUND: strcpy(s,"STRING_KEY_FOUND"); break;
-        case STRING_KEY_NOT_FOUND: strcpy(s,"STRING_KEY_NOT_FOUND"); break;
-        case STRING_OK: strcpy(s,"STRING_OK"); break;
-        case STRING_BUFFER_OVERFLOW: strcpy(s,"STRING_BUFFER_OVERFLOW"); break;
-        case STRING_TOKEN_LENGTH_TOO_LONG: strcpy(s,"STRING_TOKEN_LENGTH_TOO_LONG"); break;
-        case STRING_INVALID_ARG: strcpy(s,"STRING_INVALID_ARG"); break;
-        case STRING_NULL: strcpy(s,"STRING_NULL"); break;
-    }
+void StrUtil_ReturnValueToString(char *s,StringStatus_t retVal)
+{
+    // switch(retVal){
+    //     case STRING_KEY_FOUND: strcpy(s,"STRING_KEY_FOUND"); break;
+    //     case STRING_KEY_NOT_FOUND: strcpy(s,"STRING_KEY_NOT_FOUND"); break;
+    //     case STRING_OK: strcpy(s,"STRING_OK"); break;
+    //     case STRING_BUFFER_OVERFLOW: strcpy(s,"STRING_BUFFER_OVERFLOW"); break;
+    //     case STRING_TOKEN_LENGTH_TOO_LONG: strcpy(s,"STRING_TOKEN_LENGTH_TOO_LONG"); break;
+    //     case STRING_INVALID_ARG: strcpy(s,"STRING_INVALID_ARG"); break;
+    //     case STRING_NULL: strcpy(s,"STRING_NULL"); break;
+    // }
 }
 
 double StrUtil_ConvertToDouble(char *String)

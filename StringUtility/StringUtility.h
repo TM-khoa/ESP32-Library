@@ -5,8 +5,8 @@
  *      Author: SpiritBoi
  */
 
-#ifndef STRINGUTILITY_H_
-#define STRINGUTILITY_H_
+#ifndef STRING_UTILITY_H_
+#define STRING_UTILITY_H_
 #include "../LibraryConfig.h"
 #ifdef CONFIG_USE_STRING_UTILITY
 #include "string.h"
@@ -20,11 +20,16 @@ typedef enum{
 	STRING_NULL,
 	STRING_BUFFER_OVERFLOW,
 	STRING_TOKEN_LENGTH_TOO_LONG,
-	STRING_NULL,
 	STRING_KEY_FOUND,
 	STRING_KEY_NOT_FOUND,
 }StringStatus_t;
 
+StringStatus_t StrUtil_TokenMessage(char *String);
+StringStatus_t StrUtil_TokenKeyValue(char *String);
+StringStatus_t StrUtil_SearchKey(char *String, char* KeySearch);
+void StrUtil_ReturnValueToString(char *s,StringStatus_t retVal);
+double StrUtil_ConvertToDouble(char *String);
+int64_t StrUtil_ConvertToInt64(char *String);
 
 
 #endif /*CONFIG_USE_STRING_HANDLE*/
