@@ -13,6 +13,7 @@
 #include <esp_err.h>
 #include "PCF8574.h"
 #include "hd44780.h"
+#include <string.h>
 
 #if defined(CONFIG_USE_KCONFIG)
 // #include "../../build/config/sdkconfig.h"

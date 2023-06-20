@@ -56,8 +56,10 @@ typedef enum{
 	HC595_BEYOND_MAX_CASCADE,
 }HC595_Status_t;
 
-HC595_Status_t HC595_Send_Data(uint8_t *dt,uint8_t n,bool ClearData,uint8_t LSB_FIRST);
+HC595_Status_t HC595_ShiftOut(uint8_t *dt,uint8_t n,uint8_t Device0GetLSBByte);
 HC595_Status_t HC595_AssignPin(HC595* dev,uint16_t pin, pinName pinName);
+HC595_Status_t HC595_PrintOutputToConsole(uint8_t *dt,uint8_t n,uint8_t Device0GetLSBByte,void (*pPrint)(char *s));
+void HC595_PrintConsole(char*s);
 void HC595_SetBitOutput(uint8_t pos);
 void HC595_ClearBitOutput(uint8_t pos);
 void HC595_SetByteOutput(uint32_t value);

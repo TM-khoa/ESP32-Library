@@ -48,8 +48,9 @@ esp_err_t LCDI2C_Config(LCDI2C *lcdi2c)
 
 esp_err_t LCDI2C_Print(const char *S, uint8_t x, uint8_t y)
 {
+    if((x + strlen(S) > LCD_COLS) || (y > LCD_COLS - 1)) return ESP_ERR_INVALID_ARG;
     esp_err_t err = hd44780_gotoxy(&lcd_Driver,x,y);
-    err = hd44780_puts(&lcd_Driver,S);
+    err = hd44780_puts(&lcd_Driver,S); 
     return err;
 }
 

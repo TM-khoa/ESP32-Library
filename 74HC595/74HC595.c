@@ -80,16 +80,14 @@ HC595_Status_t HC595_ShiftOut(uint8_t *dt,uint8_t n,uint8_t Device0GetLSBByte)
 	    if(a&0x80) HC595_WRITE(HC595_DS,1);
 	    else HC595_WRITE(HC595_DS,0);
 		HC595_WRITE(HC595_CLK,0);
-		HC595_WRITE(HC595_CLK,0);
-		HC595_WRITE(HC595_CLK,1);
 		HC595_WRITE(HC595_CLK,1);
 		a <<= 1;
 	    if(i%8 == 0) {
 	        a = *(dt+(i/8-1));
 	    }
 	}
-	HC595_WRITE(HC595_LATCH,1);
 	HC595_WRITE(HC595_LATCH,0);
+	HC595_WRITE(HC595_LATCH,1);
 	return HC595_OK;
 }
 
@@ -102,22 +100,69 @@ void HC595_ReturnValueToString(char *s,HC595_Status_t retVal){
     }
 }
 
+void HC595_PrintConsole(char*s)
+{
+	printf("%s",s);
+}
+
+HC595_Status_t HC595_PrintOutputToConsole(uint8_t *dt,uint8_t n,uint8_t Device0GetLSBByte,void (*pPrint)(char *s))
+{
+	char s[40] = {0};
+	if(!_hc595 || !n) return HC595_INVALID_ARG;
+	if(n > HC595_MAX_CASCADE) return HC595_BEYOND_MAX_CASCADE;
+	// Use internal buffer to shift out if dt is NULL
+	uint8_t a;
+	if(!dt && n < 5) {
+	    uint8_t Temp[4];
+	    ByteSlitting(_hc595->data,Temp,Device0GetLSBByte);
+	    dt = Temp;
+	}
+	for(uint8_t i=0;i<n;i++){
+		char sTemp[7];
+		sprintf(sTemp,"0x%x ",dt[i]);
+		strcat(s,sTemp);
+	}
+	strcat(s,"\n");
+	pPrint(s);
+	a = *(dt+(n-1));
+	for(int8_t i=(n*8)-1; i > -1; i--){
+	    if(a&0x80) pPrint("1");
+	    else pPrint("0");
+		a <<= 1;
+	    if(i%8 == 0) {
+	        a = *(dt+(i/8-1));
+			if(Device0GetLSBByte) pPrint("->");
+			else pPrint("<-");
+	    }
+	}
+	pPrint("\n");
+	return HC595_OK;
+}
+
 void HC595_TestOutput()
 {
-	// static uint16_t dataOriginal= 0x0200;
-	// static uint8_t shft=0;
-	// uint8_t data[2];
-	// shft++;
-	// dataOriginal>>=1;
-	// dataOriginal|=0x0200;
-	// if(shft==10) {
-	// 	shft = 0;
-	// 	dataOriginal = 0x0200;
-	// }
-	// data[0]=dataOriginal >> 8;
-	// data[1]=dataOriginal;
-	// // HC595_Send_Data(data,2);
-	// DELAY_MS(100);
+	if(!_hc595) return;
+	for(uint8_t i=0;i<16;i++){
+		HC595_WRITE(HC595_DS,1);
+		HC595_WRITE(HC595_CLK,0);
+		HC595_WRITE(HC595_CLK,0);
+		HC595_WRITE(HC595_CLK,1);
+		HC595_WRITE(HC595_CLK,1);
+		HC595_WRITE(HC595_LATCH,0);
+		HC595_WRITE(HC595_LATCH,1);
+		DELAY_MS(500);
+	}
+	DELAY_MS(1000);
+	for(uint8_t i=0;i<16;i++){
+		HC595_WRITE(HC595_DS,0);
+		HC595_WRITE(HC595_CLK,0);
+		HC595_WRITE(HC595_CLK,0);
+		HC595_WRITE(HC595_CLK,1);
+		HC595_WRITE(HC595_CLK,1);
+		HC595_WRITE(HC595_LATCH,0);
+		HC595_WRITE(HC595_LATCH,1);
+		DELAY_MS(500);
+	}
 }
 
 void HC595_SetBitOutput(uint8_t pos)
