@@ -55,7 +55,7 @@ ConnectionStatus_e PingGoogleDNS(void)
 esp_err_t GetDNSInfo(char *host)
 {
     esp_err_t err = ESP_OK;
-    if (_CheckWIFIDaKetNoi()){
+    if (_CheckWifiStatus(_WifiStatus) == WIFI_EVENT_STA_CONNECTED){
         // parse IP address
         ip_addr_t target_addr;
         memset(&target_addr, 0, sizeof(target_addr));
@@ -70,7 +70,7 @@ esp_err_t GetDNSInfo(char *host)
             err = ESP_FAIL;
         }
         else{
-            // ESP_LOGI(TAG, "Internet OK");
+            ESP_LOGI(TAG, "Internet OK");
             InternetStatus = CONNECTION_INTERNET_OK;
             err = ESP_OK;
         }

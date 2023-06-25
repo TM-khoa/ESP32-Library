@@ -59,10 +59,14 @@ Contains the freeRTOS task and all necessary support
 #include "nvs_sync.h"
 #include "wifi_manager.h"
 
-int _WIFIDaKetNoi = 0;
+wifi_event_t _WifiStatus;
+ip_event_t _IPStatus;
 
-int _CheckWIFIDaKetNoi(){
-	return _WIFIDaKetNoi;
+wifi_event_t _CheckWifiStatus(wifi_event_t wifi_status){
+	return wifi_status;
+}
+ip_event_t _CheckIPStatus(ip_event_t ip_event){
+	return ip_event;
 }
 
 /* objects used to manipulate the main queue of events */
@@ -216,7 +220,7 @@ void wifi_manager_start()
 	wifi_manager_shutdown_ap_timer = xTimerCreate(NULL, pdMS_TO_TICKS(WIFI_MANAGER_SHUTDOWN_AP_TIMER), pdFALSE, (void *)0, wifi_manager_timer_shutdown_ap_cb);
 
 	/* start wifi manager task */
-	xTaskCreate(&wifi_manager, "wifi_manager", 4096, NULL, WIFI_MANAGER_TASK_PRIORITY, &task_wifi_manager);
+	xTaskCreatePinnedToCore(&wifi_manager, "wifi_manager", 4096, NULL, WIFI_MANAGER_TASK_PRIORITY, &task_wifi_manager, 0);
 }
 
 esp_err_t wifi_manager_save_sta_config()
@@ -638,7 +642,7 @@ static void wifi_manager_event_handler(void *arg, esp_event_base_t event_base, i
 		 * the application is LwIP-based, then you need to wait until the got ip event comes in. */
 		case WIFI_EVENT_STA_CONNECTED:
 			ESP_LOGI(TAG, "WIFI_EVENT_STA_CONNECTED");
-			// _WIFIDaKetNoi = 1;
+			_WifiStatus = WIFI_EVENT_STA_CONNECTED;
 			break;
 
 		/* This event can be generated in the following scenarios:
@@ -688,7 +692,7 @@ static void wifi_manager_event_handler(void *arg, esp_event_base_t event_base, i
 		case WIFI_EVENT_STA_DISCONNECTED:
 			ESP_LOGI(TAG, "WIFI_EVENT_STA_DISCONNECTED");
 
-			_WIFIDaKetNoi = 0;
+			_WifiStatus = WIFI_EVENT_STA_DISCONNECTED;
 
 			wifi_event_sta_disconnected_t *wifi_event_sta_disconnected = (wifi_event_sta_disconnected_t *)malloc(sizeof(wifi_event_sta_disconnected_t));
 			*wifi_event_sta_disconnected = *((wifi_event_sta_disconnected_t *)event_data);
@@ -767,7 +771,8 @@ static void wifi_manager_event_handler(void *arg, esp_event_base_t event_base, i
 			ip_event_got_ip_t *ip_event_got_ip = (ip_event_got_ip_t *)malloc(sizeof(ip_event_got_ip_t));
 			*ip_event_got_ip = *((ip_event_got_ip_t *)event_data);
 			wifi_manager_send_message(WM_EVENT_STA_GOT_IP, (void *)(ip_event_got_ip));
-			_WIFIDaKetNoi = 1;
+			_IPStatus = IP_EVENT_STA_GOT_IP;
+			// _WIFIDaKetNoi = 1;
 			break;
 
 		/* This event arises when the IPV6 SLAAC support auto-configures an address for the ESP32, or when this address changes.
@@ -783,6 +788,7 @@ static void wifi_manager_event_handler(void *arg, esp_event_base_t event_base, i
 		 * Generally the application don’t need to care about this event, it is just a debug event to let the application
 		 * know that the IPV4 address is lost. */
 		case IP_EVENT_STA_LOST_IP:
+			_IPStatus = IP_EVENT_STA_LOST_IP;
 			ESP_LOGI(TAG, "IP_EVENT_STA_LOST_IP");
 			break;
 		}

@@ -40,7 +40,7 @@
 #include <esp_idf_lib_helpers.h>
 #include "ds3231.h"
 
-#define I2C_FREQ_HZ 400000
+#define I2C_FREQ_HZ 100000
 
 #define DS3231_STAT_OSCILLATOR 0x80
 #define DS3231_STAT_32KHZ      0x08
@@ -108,22 +108,22 @@ esp_err_t ds3231_free_desc(i2c_dev_t *dev)
     return i2c_dev_delete_mutex(dev);
 }
 
-esp_err_t ds3231_set_time(i2c_dev_t *dev, struct tm *time)
+esp_err_t ds3231_set_time(i2c_dev_t *dev, struct tm time)
 {
-    CHECK_ARG(dev && time);
+    CHECK_ARG(dev);
 
     uint8_t data[7];
 
     /* time/date data */
-    data[0] = dec2bcd(time->tm_sec);
-    data[1] = dec2bcd(time->tm_min);
-    data[2] = dec2bcd(time->tm_hour);
+    data[0] = dec2bcd(time.tm_sec);
+    data[1] = dec2bcd(time.tm_min);
+    data[2] = dec2bcd(time.tm_hour);
     /* The week data must be in the range 1 to 7, and to keep the start on the
      * same day as for tm_wday have it start at 1 on Sunday. */
-    data[3] = dec2bcd(time->tm_wday + 1);
-    data[4] = dec2bcd(time->tm_mday);
-    data[5] = dec2bcd(time->tm_mon + 1);
-    data[6] = dec2bcd(time->tm_year - 100);
+    data[3] = dec2bcd(time.tm_wday + 1);
+    data[4] = dec2bcd(time.tm_mday);
+    data[5] = dec2bcd(time.tm_mon + 1);
+    data[6] = dec2bcd(time.tm_year - 100);
 
     I2C_DEV_TAKE_MUTEX(dev);
     I2C_DEV_CHECK(dev, i2c_dev_write_reg(dev, DS3231_ADDR_TIME, data, 7));

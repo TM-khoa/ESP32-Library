@@ -55,7 +55,7 @@ typedef enum
     HTTP_Proxy_Authentication_Required,
     HTTP_Request_Timeout,
     HTTP_Conflict,
-} HTTP_CODE_e;
+} http_status_t;
 
 typedef enum
 {
@@ -66,9 +66,12 @@ typedef enum
 void PostDebug();
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt);
-HTTP_CODE_e http_get(char *url, char *response);
-HTTP_CODE_e http_post(char *url, char *body);
-HTTP_CODE_e http_head(char *url);
+
+http_status_t http_get(char *url, char *response);
+
+http_status_t http_post(char *url, char *body);
+
+http_status_t http_head(char *url);
 
 #ifdef __cplusplus
 }

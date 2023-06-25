@@ -58,7 +58,7 @@ esp_err_t sht31_read_temp_humi(float *temp, float *humi){
     }
     i2c_cmd_link_delete(cmd);
 
-    vTaskDelay(2/portTICK_PERIOD_MS);
+    vTaskDelay(4/portTICK_PERIOD_MS);
 
     cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);

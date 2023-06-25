@@ -78,8 +78,8 @@ struct hd44780
         uint8_t e;         //!< GPIO/register bit used for E pin
         uint8_t d4;        //!< GPIO/register bit used for D4 pin
         uint8_t d5;        //!< GPIO/register bit used for D5 pin
-        uint8_t d6;        //!< GPIO/register bit used for D5 pin
-        uint8_t d7;        //!< GPIO/register bit used for D5 pin
+        uint8_t d6;        //!< GPIO/register bit used for D6 pin
+        uint8_t d7;        //!< GPIO/register bit used for D7 pin
         uint8_t bl;        //!< GPIO/register bit used for backlight. Set it `HD44780_NOT_USED` if no backlight used
     } pins;
     hd44780_font_t font;   //!< LCD Font type

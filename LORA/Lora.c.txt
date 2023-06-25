@@ -241,40 +241,6 @@ lora_set_frequency(long frequency)
    lora_write_reg(REG_FRF_LSB, (uint8_t)(frf >> 0));
 }
 
-int lora_get_spreading_factor(){
-   return lora_read_reg(REG_MODEM_CONFIG_2) >> 4;
-}
-
-long lora_get_signal_bandwidth(){
-   uint8_t bandwidth = (lora_read_reg(REG_MODEM_CONFIG_1) >> 4);
-
-   switch (bandwidth)
-   {
-      case 0: return 7.8E3;
-      case 1: return 10.4E3;
-      case 2: return 15.6E3;
-      case 3: return 20.8E3;
-      case 4: return 31.25E3;
-      case 5: return 41.7E3;
-      case 6: return 62.5E3;
-      case 7: return 125E3;
-      case 8: return 250E3;
-      case 9: return 500E3;
-   }
-   return -1;
-}
-
-void lora_SetLdoFlag(){
-   // Section 4.1.1.5
-   long symbolDuration = 1000 / (lora_get_signal_bandwidth() / (1L << lora_get_spreading_factor() ));
-   // Section 4.1.1.6
-   bool LdoON = (symbolDuration > 16) ? true : false;
-
-   uint8_t config3 = lora_read_reg(REG_MODEM_CONFIG_3);
-   config3 = config3 | (LdoON<<3);
-   lora_write_reg(REG_MODEM_CONFIG_3, config3);
-}
-
 /**
  * Set spreading factor.
  * @param sf 6-12, Spreading factor to use.
@@ -294,7 +260,6 @@ lora_set_spreading_factor(int sf)
    }
 
    lora_write_reg(REG_MODEM_CONFIG_2, (lora_read_reg(REG_MODEM_CONFIG_2) & 0x0f) | ((sf << 4) & 0xf0));
-   lora_SetLdoFlag();
 }
 
 /**
@@ -317,7 +282,6 @@ lora_set_bandwidth(long sbw)
    else if (sbw <= 250E3) bw = 8;
    else bw = 9;
    lora_write_reg(REG_MODEM_CONFIG_1, (lora_read_reg(REG_MODEM_CONFIG_1) & 0x0f) | (bw << 4));
-   lora_SetLdoFlag();
 }
 
 /**

@@ -169,9 +169,9 @@ free_output_buffer:
 }
 }
 
-HTTP_CODE_e http_get(char *url, char *response)
+http_status_t http_get(char *url, char *response)
 {
-    HTTP_CODE_e http_code_response = HTTP_Not_Found;
+    http_status_t http_code_response = HTTP_Not_Found;
     if (!url)
     {
         ESP_LOGE(TAG, "HTTP GET input url is NULL");
@@ -254,7 +254,7 @@ HTTP_CODE_e http_get(char *url, char *response)
     return http_code_response;
 }
 
-HTTP_CODE_e http_post(char *url, char *body)
+http_status_t http_post(char *url, char *body)
 {
     if (!url)
     {
@@ -268,7 +268,7 @@ HTTP_CODE_e http_post(char *url, char *body)
     }
     ESP_LOGD(TAG, "HTTP POST url:%s body:%s", url, body);
 
-    HTTP_CODE_e http_code_response = HTTP_Not_Found;
+    http_status_t http_code_response = HTTP_Not_Found;
     esp_http_client_config_t config = {
         .url = url,
         .event_handler = _http_event_handler,
@@ -308,14 +308,14 @@ HTTP_CODE_e http_post(char *url, char *body)
 
     if (http_code_response != HTTP_OK)
     {
-        // ESP_LOGE(TAG, "Không thể POST lên server! Mã lỗi: %d %s", http_code_response, esp_err_to_name(http_code_response));
-        ESP_LOGE(TAG, "Nội dung body POST: %s", body);
+        ESP_LOGE(TAG, "Can't post to server! Error Code: %d - %s", http_code_response, esp_err_to_name(http_code_response));
+        ESP_LOGE(TAG, "Body POST content: %s", body);
     }
     esp_http_client_cleanup(client);
     return http_code_response;
 }
 
-HTTP_CODE_e http_head(char *url)
+http_status_t http_head(char *url)
 {
     if (!url)
     {
@@ -323,7 +323,7 @@ HTTP_CODE_e http_head(char *url)
         return ESP_ERR_INVALID_ARG;
     }
     ESP_LOGD(TAG, "HTTP HEAD %s", url);
-    HTTP_CODE_e http_code_response = HTTP_Not_Found;
+    http_status_t http_code_response = HTTP_Not_Found;
     esp_http_client_config_t config = {
         .url = url,
         .event_handler = _http_event_handler,
@@ -357,9 +357,9 @@ HTTP_CODE_e http_head(char *url)
     return http_code_response;
 }
 
-HTTP_CODE_e http_get_KiemTraLink(char *url)
+http_status_t http_get_KiemTraLink(char *url)
 {
-    HTTP_CODE_e http_code_response = HTTP_Not_Found;
+    http_status_t http_code_response = HTTP_Not_Found;
     if (!url)
     {
         ESP_LOGE(TAG, "HTTP GET input url is NULL");

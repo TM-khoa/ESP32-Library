@@ -123,7 +123,7 @@ esp_err_t ds3231_free_desc(i2c_dev_t *dev);
  *
  * @return ESP_OK to indicate success
  */
-esp_err_t ds3231_set_time(i2c_dev_t *dev, struct tm *time);
+esp_err_t ds3231_set_time(i2c_dev_t *dev, struct tm time);
 
 /**
  * @brief Get the time from the RTC, populates a supplied tm struct

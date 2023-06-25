@@ -40,8 +40,11 @@ extern "C"
 {
 #endif
 
-#define DEFAULT_AP_SSID "esp32SpiritBoi"
-#define DEFAULT_AP_PASSWORD "esp32spiritboi"
+extern wifi_event_t _WifiStatus;
+extern ip_event_t _IPStatus;
+
+#define DEFAULT_AP_SSID "ESP32-LoRaWan"
+#define DEFAULT_AP_PASSWORD "12345678"
 #define DEFAULT_AP_IP CONFIG_DEFAULT_AP_IP
 #define DEFAULT_AP_GATEWAY CONFIG_DEFAULT_AP_GATEWAY
 #define DEFAULT_AP_NETMASK CONFIG_DEFAULT_AP_NETMASK
@@ -192,6 +195,11 @@ extern "C"
 		void *param;
 	} queue_message;
 
+
+	wifi_event_t _CheckWifiStatus(wifi_event_t wifi_status);
+
+	ip_event_t _CheckIPStatus(ip_event_t ip_event);
+
 	/**
 	 * @brief returns the current esp_netif object for the STAtion
 	 */
@@ -207,7 +215,6 @@ extern "C"
 	 */
 	void wifi_manager_start();
 
-	int _CheckWIFIDaKetNoi();
 
 	/**
 	 * Frees up all memory allocated by the wifi_manager and kill the task.
