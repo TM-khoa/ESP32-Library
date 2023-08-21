@@ -1,7 +1,7 @@
 #include "POSTGET.h"
 #ifdef CONFIG_USE_POSTGET
 static const char *TAG = "POSTGET";
-
+char *preOutputBuffer = NULL;
 esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
     esp_err_t err = ESP_OK;
@@ -10,7 +10,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     switch (evt->event_id)
     {
     case HTTP_EVENT_ERROR:{
-            ESP_LOGD(TAG, "HTTP_EVENT_ERROR");
+            ESP_LOGW(TAG, "HTTP_EVENT_ERROR");
             goto free_output_buffer;
             break;
         }
@@ -44,7 +44,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
                 if (current_total_len < MAX_HTTP_OUTPUT_BUFFER)
                 {
                     memcpy(evt->user_data + output_len, evt->data, evt->data_len);
-                    ESP_LOGD(TAG, "evt->user_data: %s", (char *)evt->user_data);
+                    ESP_LOGW(TAG, "evt->user_data: %s", (char *)evt->user_data);
                 }
                 // Nếu tổng đó vượt giới hạn,
                 // thì báo lỗi và không ghép chuỗi nữa, cho đến khi nhận được sự kiện HTTP_EVENT_DISCONNECTED.
@@ -69,8 +69,8 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 
                     if (!output_buffer)
                     {
-                        ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %lu",esp_get_free_heap_size());
-                        ESP_LOGD(TAG, "esp_http_client_get_content_length=%llu", esp_http_client_get_content_length(evt->client));
+                        // ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %lu",esp_get_free_heap_size());
+                        // ESP_LOGW(TAG, "esp_http_client_get_content_length=%llu", esp_http_client_get_content_length(evt->client));
                         output_buffer = (char *)calloc(esp_http_client_get_content_length(evt->client), sizeof(char));
                         output_len = 0;
                         if (!output_buffer)
@@ -81,7 +81,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
                         }
                     }
                     memcpy(output_buffer + output_len, evt->data, evt->data_len);
-                    ESP_LOGD(TAG, "output_buffer: %s", output_buffer);
+                    // ESP_LOGW(TAG, "output_buffer: %s", output_buffer);
                 }
                 // Nếu là "chunked" thì không biết trước được chiều dài mảng để cấp phát động
                 // phái báo lỗi và không thực hiện copy
@@ -93,7 +93,8 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
                     // thì thực hiện ghép chuỗi.
                     if (current_total_len < MAX_HTTP_OUTPUT_BUFFER)
                     {
-                        ESP_LOGW(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %lu",esp_get_free_heap_size());
+                        ESP_LOGD(TAG, "Free heap before Calloc HTTP_EVENT_ON_DATA: %lu",esp_get_free_heap_size());
+                        
                         output_buffer = (char *)reallocarray(output_buffer, (current_total_len + 1), sizeof(char));
                         if (!output_buffer)
                         {
@@ -102,7 +103,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
                             break;
                         }
                         memcpy(output_buffer + output_len, evt->data, evt->data_len);
-                        ESP_LOGD(TAG, "output_buffer: %s", output_buffer);
+                        // ESP_LOGW(TAG, "output_buffer: %s", output_buffer);
                         // ESP_LOG_BUFFER_HEX(TAG, output_buffer, current_total_len + 1);
                     }
                     // Nếu tổng đó vượt giới hạn,
@@ -161,7 +162,7 @@ free_output_buffer:
 {
     if (!output_buffer)
     {
-        ESP_LOGD(TAG, "free output_buffer");
+        // ESP_LOGW(TAG, "free output_buffer");
         free(output_buffer);
         output_buffer = NULL;
     }
@@ -178,7 +179,7 @@ HTTP_CODE_e http_get(char *url, char *response)
         ESP_LOGE(TAG, "HTTP GET input url is NULL");
         return ESP_ERR_INVALID_ARG;
     }
-    ESP_LOGD(TAG, "HTTP GET %s", url);
+    ESP_LOGW(TAG, "HTTP GET %s", url);
     if (!response)
     {
         ESP_LOGW(TAG, "output response pointer is NULL");
@@ -214,8 +215,8 @@ HTTP_CODE_e http_get(char *url, char *response)
         int content_length = esp_http_client_get_content_length(client);
         if (content_length == -1)
         {
-            ESP_LOGD(TAG, "GET %s ERROR", url);
-            // ESP_LOGD(TAG,
+            ESP_LOGW(TAG, "GET %s ERROR", url);
+            // ESP_LOGW(TAG,
             //          "GET %s, "
             //          "Status = %d, "
             //          "chunked",
@@ -224,8 +225,8 @@ HTTP_CODE_e http_get(char *url, char *response)
         }
         else
         {
-            ESP_LOGD(TAG, "GET %s OK", url);   
-            // ESP_LOGD(TAG,
+            ESP_LOGW(TAG, "GET %s OK", url);   
+            // ESP_LOGW(TAG,
             //          "GET %s, "
             //          "Status = %d, "
             //          "content_length = %d",
@@ -242,13 +243,13 @@ HTTP_CODE_e http_get(char *url, char *response)
 
     if (response)
     {
-        ESP_LOGD(TAG, "response length %d", strlen(response));
-        ESP_LOGD(TAG, "response %s", response);
+        ESP_LOGW(TAG, "response length %d", strlen(response));
+        ESP_LOGW(TAG, "response %s", response);
         // ESP_LOG_BUFFER_HEX(TAG, response, strlen(response));
     }
     else
     {
-        ESP_LOGD(TAG, "response pointer is NULL");
+        ESP_LOGW(TAG, "response pointer is NULL");
     }
 
     esp_http_client_cleanup(client);
@@ -296,13 +297,13 @@ HTTP_CODE_e http_post(char *url, char *body)
     if (err == ESP_OK)
     {
         ESP_LOGD(TAG, "HTTP POST OK");
-        // ESP_LOGD(TAG, "HTTP POST Status = %d, content_length = %d",
+        // ESP_LOGW(TAG, "HTTP POST Status = %d, content_length = %d",
         //          http_code_response,
         //          esp_http_client_get_content_length(client));
     }
     else
     {
-        ESP_LOGD(TAG, "HTTP POST ERR");
+        ESP_LOGW(TAG, "HTTP POST ERR");
         // ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
         http_code_response = err;
     }
@@ -323,7 +324,7 @@ HTTP_CODE_e http_head(char *url)
         ESP_LOGE(TAG, "HTTP HEAD input url is NULL");
         return ESP_ERR_INVALID_ARG;
     }
-    ESP_LOGD(TAG, "HTTP HEAD %s", url);
+    ESP_LOGW(TAG, "HTTP HEAD %s", url);
     HTTP_CODE_e http_code_response = HTTP_Not_Found;
     esp_http_client_config_t config = {
         .url = url,
@@ -344,7 +345,7 @@ HTTP_CODE_e http_head(char *url)
     http_code_response = esp_http_client_get_status_code(client);
     if (err == ESP_OK)
     {
-        // ESP_LOGD(TAG, "HTTP HEAD Status = %d, content_length = %d",
+        // ESP_LOGW(TAG, "HTTP HEAD Status = %d, content_length = %d",
         //          http_code_response,
         //          esp_http_client_get_content_length(client));
     }
@@ -366,7 +367,7 @@ HTTP_CODE_e http_get_KiemTraLink(char *url)
         ESP_LOGE(TAG, "HTTP GET input url is NULL");
         return ESP_ERR_INVALID_ARG;
     }
-    ESP_LOGD(TAG, "HTTP GET %s", url);
+    ESP_LOGW(TAG, "HTTP GET %s", url);
 
     esp_http_client_config_t config = {
         .url = url,

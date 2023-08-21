@@ -36,7 +36,15 @@ RTC_t RTC_GetTimeFromString(char *s)
 	}
 	return t;
 }
+
+
+
 void RTC_PackTimeToString(RTC_t t, char* s)
 {
 	sprintf(s,"Time: %d/%d/%d %d:%d:%d",t.day,t.month,t.year,t.hour,t.minute,t.second);
+}
+
+void RTC_SetSecond(uint8_t sec){
+	if(sec > 59) return;
+	  
 }
