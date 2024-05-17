@@ -20,7 +20,7 @@ esp_err_t LCDI2C_Config(LCDI2C *lcdi2c)
     // Check if object is NULL, return error if NULL
     if(!lcdi2c) return ESP_ERR_INVALID_ARG;
     pLCD_I2C = lcdi2c;
-    i2cdev_init();
+    
     lcd_sdaPin = I2C_MASTER_SDA_IO;
     lcd_sclPin = I2C_MASTER_SCL_IO;
     lcd_pcfAddr = PCF8574_DEFAULT_ADDRESS;

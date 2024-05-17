@@ -24,6 +24,9 @@ typedef struct RTC_t
 }RTC_t;
 
 RTC_t RTC_GetTimeFromString(char *s);
-void RTC_PackTimeToString(RTC_t t, char* s);
+void RTC_PackTimeToString(RTC_t t, char *s);
+uint8_t RTC_ConvertTickElapsedToMinute(uint16_t input_RTC_TickCount);
+uint8_t RTC_ConvertTickElapsedToSecond(uint16_t input_RTC_TickCount);
+uint8_t RTC_ConvertTickElapsedToHour(uint16_t input_RTC_TickCount);
 
 #endif /* INC_RTC_FORMAT_H_ */
