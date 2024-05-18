@@ -14,6 +14,10 @@
 
 #define PCF8574_I2C_FREQ_HZ         100000 // 100KHz
 
+
+
+#if defined(CONFIG_USE_CPP)
+#else
 typedef enum{
     PCF8574_OK,
     PCF8574_ERROR,
@@ -27,24 +31,6 @@ typedef enum{
 #define pcfSDA pPCF->i2c_dev.cfg.sda_io_num
 #define pcfSCL pPCF->i2c_dev.cfg.scl_io_num
 #define pcfValue pPCF->value
-
-#if defined(CONFIG_USE_CPP)
-#include <iostream>
-using namespace std;
-class ClassPCF8574{
-private:
-    i2c_dev_t i2c_dev;
-    uint8_t value;
-public:
-    esp_err_t begin(gpio_num_t sda_gpio, gpio_num_t scl_gpio, i2c_port_t port, uint8_t Address,bool PULLUP);
-    esp_err_t end();
-
-    esp_err_t write_port(uint8_t val);
-
-    esp_err_t write(uint8_t val);
-    esp_err_t write(uint8_t pin, bool val);
-};
-#else
 typedef struct PCF8574{
     i2c_dev_t i2c_dev;
     uint8_t value;

@@ -1,6 +1,7 @@
 
 #include "PCF8574.h"
 #ifdef CONFIG_USE_PCF8574
+#ifndef CONFIG_USE_CPP
 #include <esp_err.h>
 #include <esp_check.h>
 PCF8574 *pPCF;
@@ -41,4 +42,5 @@ PCF8574_Status_t PCF8574_WritePin(uint8_t pin, bool val){
     (val) ? (temp |= (0x01 << pin)) : (temp &= ~(1 << pin));
     return PCF8574_Write(temp);
 }
+#endif
 #endif
