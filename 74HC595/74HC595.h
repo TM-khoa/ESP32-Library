@@ -33,6 +33,7 @@ typedef struct {
 	uint16_t pin;
 }pinConfig;
 
+
 typedef struct HC595{
 	pinConfig ds;
 	pinConfig clk;
@@ -55,7 +56,9 @@ typedef enum{
 	HC595_INVALID_ARG,
 	HC595_BEYOND_MAX_CASCADE,
 }HC595_Status_t;
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 HC595_Status_t HC595_ShiftOut(uint8_t *dt,uint8_t n,uint8_t Device0GetLSBByte);
 HC595_Status_t HC595_AssignPin(HC595* dev,uint16_t pin, pinName pinName);
 HC595_Status_t HC595_PrintOutputToConsole(uint8_t *dt,uint8_t n,uint8_t Device0GetLSBByte,void (*pPrint)(char *s));
@@ -69,6 +72,11 @@ void HC595_TestPin(pinName pin);
 void HC595_DisableOutput();
 void HC595_EnableOutput();
 void HC595_TestOutput();
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* INC_74HC595_H_ */
 #endif
 
