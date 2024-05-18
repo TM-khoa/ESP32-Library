@@ -2,7 +2,7 @@
 #include "LCD_I2C.h"
 #include "esp_check.h"
 #ifdef CONFIG_USE_LCDI2C
-
+#ifndef CONFIG_USE_CPP
 LCDI2C *pLCD_I2C;
 
 esp_err_t LCDI2C_TestOutput(){
@@ -57,7 +57,8 @@ esp_err_t LCDI2C_Print(const char *S, uint8_t x, uint8_t y)
 esp_err_t LCDI2C_TurnOnBackLight(){return hd44780_switch_backlight(&lcd_Driver,1);}
 esp_err_t LCDI2C_TurnOffBackLight() {return hd44780_switch_backlight(&lcd_Driver,0);}
 esp_err_t LCDI2C_Clear(){return hd44780_clear(&lcd_Driver);}
-#endif
+#endif /*CONFIG_USE_CPP*/
+#endif /*CONFIG_USE_LCDI2C*/
 
 
 

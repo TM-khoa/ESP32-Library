@@ -44,21 +44,7 @@
 #define I2C_PORT I2C_NUM_0
 #define PCF8574_DEFAULT_ADDRESS 0x20
 
-#if defined(CONFIG_USE_CPP)
-#include <iostream>
-using namespace std;
-class ClassLCDI2C{
-private:
-    
-public:
-    esp_err_t begin(i2c_dev_t *dev);
-    esp_err_t clear();
-    esp_err_t TurnOnBackLight();
-    esp_err_t TurnOffBackLight();
-    esp_err_t print(const char *S, uint8_t x, uint8_t y);
-    esp_err_t testPCF();
-};
-#else
+#ifndef CONFIG_USE_CPP
 typedef struct LCDI2C{
     PCF8574 pcf;
     hd44780_t lcdDriver;

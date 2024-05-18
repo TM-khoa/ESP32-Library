@@ -8,16 +8,16 @@
  * @copyright Copyright (c) 2022
  * 
  */
-#include "LCD_I2C.h"
+#include "LCD_I2C.hpp"
 #ifdef CONFIG_USE_LCDI2C
 #if defined(CONFIG_USE_CPP)
 static const char *TAG = "LCD_I2C";
 ClassPCF8574 _PCF8574;
 hd44780_t _LCD;
 
-esp_err_t ClassLCDI2C::testPCF()
+esp_err_t ClassLCDI2C::testPCF(uint8_t value)
 {
-    return _PCF8574.write(0x55);
+    return _PCF8574.write(value);
 }
 
 static inline esp_err_t  PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
@@ -25,15 +25,13 @@ static inline esp_err_t  PCF_send_lcd_data(const hd44780_t *lcd, uint8_t data)
     return _PCF8574.write(data);
 }
 
-esp_err_t ClassLCDI2C::begin(i2c_dev_t *dev)
+esp_err_t ClassLCDI2C::begin()
 {
-    i2cdev_init();
-    
     esp_err_t err = ESP_OK;
-    err =_PCF8574.begin((gpio_num_t)dev->cfg.sda_io_num,
-                        (gpio_num_t)dev->cfg.scl_io_num,
-                        dev->port,
-                        dev->addr,true);
+    err =_PCF8574.begin((gpio_num_t)I2C_MASTER_SDA_IO,
+                        (gpio_num_t)I2C_MASTER_SCL_IO,
+                        I2C_NUM_0,
+                        0,false);
     _LCD.pins.d4 = LCD_PCF8574_D4;
     _LCD.pins.d5 = LCD_PCF8574_D5;
     _LCD.pins.d6 = LCD_PCF8574_D6;
